@@ -1,0 +1,60 @@
+# Byte-compiled / Optimized / Cached Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.venv/
+Pipfile.lock
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Jupyter Notebook hidden configuration
+.jupyter/
+
+# System-specific files (Mac & Windows)
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs & Debugging Files
+logs/
+*.log
+
+# Python Packaging
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Hidden files from editors (VS Code, PyCharm)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Conda environments
+*.conda
+*.lock
+
+# Generated CSV, JSON, or temporary data files
+*.csv
+*.json
+*.tsv
+*.db
+*.sqlite
+
+# HDF5 & Pickle files (if used for saving models)
+*.h5
+*.hdf5
+*.pkl
+*.joblib
+
+# Model files & large binaries
+*.ckpt
+*.pb
+*.onnx
+*.tflite
