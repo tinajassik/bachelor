@@ -9,6 +9,8 @@ venv/
 .venv/
 Pipfile.lock
 
+.poetry/
+
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
@@ -58,3 +60,5 @@ build/
 *.pb
 *.onnx
 *.tflite
+
+.env

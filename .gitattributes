@@ -1,0 +1,14 @@
+# Normalize line endings (auto-convert CRLF to LF)
+* text=auto
+
+# Keep specific files as-is (for binary files)
+*.png binary
+*.jpg binary
+*.tif binary
+*.pdf binary
+
+# Keep shell scripts using LF (important for Mac/Linux users)
+*.sh text eol=lf
+
+# Keep batch scripts using CRLF (for Windows users)
+*.bat text eol=crlf
