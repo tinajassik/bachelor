@@ -46,7 +46,6 @@ def fetch_skraafoto_item_bbox(lat1, lon1, lat2, lon2, limit=10):
         dict: JSON response from the API.
     """
     # Load environment variables
-    load_dotenv()
     API_URL = "https://api.dataforsyningen.dk/rest/skraafoto_api/v1.0/search"
     TOKEN = os.getenv("SKRAAFOTO_TOKEN")
     
