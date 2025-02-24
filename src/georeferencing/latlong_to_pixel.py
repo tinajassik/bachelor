@@ -80,7 +80,7 @@ def latlon_to_pixel(latitude, longitude, skraafoto_item_json):
     x_world, y_world = transformer.transform(longitude, latitude)
     
     # get the height value
-    z_world = elevation.get_elevation(x_world, y_world)
+    z_world = get_safe_elevation(x_world, y_world)
 
     # get camera parameters
     camera_params = extract_camera_parameters(skraafoto_item_json);
@@ -134,3 +134,31 @@ def latlon_to_pixel(latitude, longitude, skraafoto_item_json):
     projected_2D_point_final = (float(pixel_x), float(pixel_y))
 
     return projected_2D_point_final
+
+
+def get_safe_elevation(x_world, y_world, fallback=31):
+    """
+    Get elevation for (x_world, y_world). If it fails, try nearby points. 
+    If all fail, return fallback elevation.
+    
+    :param x_world: UTM X coordinate
+    :param y_world: UTM Y coordinate
+    :param fallback: Default elevation if no data is found
+    :return: Elevation in meters
+    """
+    
+    z_world = elevation.get_elevation(x_world, y_world)
+    
+    if z_world is not None:
+        return z_world  
+
+    offsets = [-2, 0, 2]
+    for dx in offsets:
+        for dy in offsets:
+            z_world = elevation.get_elevation(x_world + dx, y_world + dy)
+            if z_world is not None:
+                print(f"✔ Found elevation at offset ({dx}, {dy}): {z_world}")
+                return z_world
+
+    print(f"⚠️ No elevation found for ({x_world}, {y_world}). Using fallback: {fallback}m")
+    return fallback
