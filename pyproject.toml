@@ -2,14 +2,14 @@
 name = "bachelor-project"
 version = "0.1.0"
 description = ""
-authors = ["Tina"]
+authors = ["Tina","Ola"]
 readme = "README.md"
 
 # Include both packages from "src/"
 packages = [
-    { include = "api", from = "src" },
-    { include = "georeferencing", from = "src" }
+    { include = "src", from = "backend" } 
 ]
+
 
 [tool.poetry.dependencies]
 python = ">=3.12"
@@ -20,6 +20,8 @@ python-dotenv = ">=1.0.1,<2.0.0"
 sympy = ">=1.13.3,<2.0.0"
 pyproj = ">=3.7.0,<4.0.0"
 matplotlib = "^3.10.0"
+fastapi = "^0.115.8"
+uvicorn = "^0.34.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"

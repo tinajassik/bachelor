@@ -1,11 +1,31 @@
 import os
 import requests
-import json
-import pyproj
-from dotenv import load_dotenv
+from fastapi import APIRouter, HTTPException
 
+# Initialize API router
+router = APIRouter()
 
-def fetch_skraafoto_item(item_id):
+# API base URLs
+BASE_ITEM_URL = "https://api.dataforsyningen.dk/rest/skraafoto_api/v1.0/collections/skraafotos2023/items/"
+BASE_SEARCH_URL = "https://api.dataforsyningen.dk/rest/skraafoto_api/v1.0/search"
+
+# Load API token from environment variables
+API_KEY = os.getenv("SKRAAFOTO_TOKEN")
+
+if not API_KEY:
+    raise ValueError("API token is missing. Ensure the .env file contains SKRAAFOTO_TOKEN.")
+
+# general API headers
+HEADERS = {
+    "token": API_KEY
+}
+
+@router.get("/test")  
+def test_route():
+    return {"message": "Skraafoto API is working!"}
+
+@router.get("/fetch/item/{item_id}")
+def fetch_skraafoto_item(item_id: str):
     """
     Fetches an item from the Skraafoto API based on the given item ID.
 
@@ -13,63 +33,61 @@ def fetch_skraafoto_item(item_id):
     :param headers: Headers for the request 
     :return: JSON response if the request is successful, else None.
     """
+    url = f"{BASE_ITEM_URL}{item_id}"
+    response = requests.get(url, headers=HEADERS)
 
-    headers = {
-        'token': os.getenv("SKRAAFOTO_TOKEN")
-    }     
-
-    base_url = "https://api.dataforsyningen.dk/rest/skraafoto_api/v1.0/collections/skraafotos2023/items/"
-    url = f"{base_url}{item_id}"
-    
-    response = requests.get(url, headers=headers)
-
-    response.raise_for_status()
-    return response.json()
-
-def get_image_from_url(img_url): 
-    return requests.get(img_url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise HTTPException(status_code=response.status_code, detail=f"Error fetching item: {response.text}")
 
 
-def fetch_skraafoto_item_bbox(lat1, lon1, lat2, lon2, limit=10):
+@router.get("/fetch/bbox")
+def fetch_skraafoto_item_bbox(lat1: float, lon1: float, lat2: float, lon2: float, limit: int = 10):
     """
     Fetches Skraafoto images within a bounding box defined by two latitude/longitude points.
-    Reads API credentials from a .env file.
     
     Args:
-        lat1 (float): Latitude of bottom-left corner.
-        lon1 (float): Longitude of bottom-left corner.
-        lat2 (float): Latitude of top-right corner.
-        lon2 (float): Longitude of top-right corner.
+        lat1 (float): Latitude of the bottom-left corner.
+        lon1 (float): Longitude of the bottom-left corner.
+        lat2 (float): Latitude of the top-right corner.
+        lon2 (float): Longitude of the top-right corner.
         limit (int): Number of results to retrieve. Default is 10.
     
     Returns:
         dict: JSON response from the API.
     """
-    API_URL = "https://api.dataforsyningen.dk/rest/skraafoto_api/v1.0/search"
-    TOKEN = os.getenv("SKRAAFOTO_TOKEN")
-    
-    if not TOKEN:
-        raise ValueError("API token is missing. Ensure the .env file contains SKRAAFOTO_TOKEN.")
-    
-    # Define bounding box
     bbox = [lon1, lat1, lon2, lat2]
-    
-    # API request parameters
     params = {
         "bbox": ",".join(map(str, bbox)),
         "limit": limit
     }
+
+    headers = HEADERS.copy()
+    headers["Content-Type"] = "application/geo+json"
     
-    # API headers
-    headers = {
-        "token": TOKEN,
-        "Content-Type": "application/geo+json"
-    }
-    
-    # Send API request
-    response = requests.get(API_URL, params=params, headers=headers)
-    
+    response = requests.get(BASE_SEARCH_URL, params=params, headers=headers)
+
     if response.status_code == 200:
         return response.json()
     else:
-        raise Exception(f"Error {response.status_code}: {response.text}")
+        raise HTTPException(status_code=response.status_code, detail=f"Error fetching bounding box items: {response.text}")
+
+
+@router.get("/fetch/image")
+def get_image_from_url(img_url: str):
+    """
+    Fetches an image from a given URL.
+    
+    Args:
+        img_url (str): The direct URL to the image.
+    
+    Returns:
+        bytes: The image content.
+    """
+    response = requests.get(img_url)
+
+    if response.status_code == 200:
+        return response.content
+    else:
+        raise HTTPException(status_code=response.status_code, detail="Failed to fetch image.")
