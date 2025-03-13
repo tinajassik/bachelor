@@ -6,9 +6,9 @@ from model import TileData
 
 TILES_OUPTUT_FOLDER = "../data/tiles/"
 
-def split_image_by_latlon(skraafoto_item_json, image, lat_steps = 11, lon_steps = 14):
+def split_image_by_latlon(skraafoto_item_json, image, lat_steps, lon_steps):
     """
-    Splits an image into tiles based on lat/lon space. Saves tiles as jpeg. Computes Homgraphies.
+    Splits an image into tiles based on lat/lon space. Saves tiles as jpeg. Computes Homographies.
 
     :param skraafoto_item_json: Skraafoto STAC Item 
     :param image: Skraafoto Image as a byte array 
