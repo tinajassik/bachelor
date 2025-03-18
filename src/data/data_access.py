@@ -70,9 +70,7 @@ def load_dict(filename: str):
         print("\nLoaded data:")
         print(loaded_dict)
     except Exception as e:
-        print(f"Error while saving {path}: {e}")
-        if file_created and os.path.exists(filename):
-                os.remove(filename)
+        print(f"Error while loading {path}: {e}")
 
 
 def load_tiles_by_id(filename: str, tile_id: str):
@@ -88,7 +86,7 @@ def load_tiles_by_id(filename: str, tile_id: str):
                 tile_data = _recursively_load_dict(h5file, f'/{tile_id}/{tile_key}')
                 tiles_data.append(tile_data)
     except Exception as e:
-        print(f"Error while saving {path}: {e}")
+        print(f"Error while loading {path}: {e}")
     return tiles_data
 
 
