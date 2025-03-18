@@ -8,7 +8,8 @@ readme = "README.md"
 # Include both packages from "src/"
 packages = [
     { include = "api", from = "src" },
-    { include = "georeferencing", from = "src" }
+    { include = "georeferencing", from = "src" },
+    { include = "data", from = "src"}
 ]
 
 [tool.poetry.dependencies]
@@ -21,6 +22,7 @@ sympy = ">=1.13.3,<2.0.0"
 pyproj = ">=3.7.0,<4.0.0"
 matplotlib = "^3.10.0"
 folium = "^0.19.4"
+h5py = "^3.13.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
