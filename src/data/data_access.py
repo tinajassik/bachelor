@@ -5,10 +5,12 @@ import tempfile
 import shutil
 
 path = '../data/saved_files/'
+extension = ".h5"
 
-def create_hdf5_file(filename: str):
+def create_hdf5_file(filename="tile_data"):
+    filepath = path+filename+extension
     try:
-        with h5py.File(path+filename, 'w-') as h5file:
+        with h5py.File(filepath, 'w-') as h5file:
             pass
         
         print(f"Empty HDF5 file '{filename}' created !")
@@ -16,8 +18,8 @@ def create_hdf5_file(filename: str):
         print(f"File '{filename}' already exists. No changes made.")
 
     
-def save_to_file(new_tiles, filename: str):
-    final_path = path + filename
+def save_to_file(new_tiles, filename="tile_data"):
+    final_path = path + filename + extension
     
     temp_fd, temp_file_path = tempfile.mkstemp(suffix='.h5')
     
@@ -54,15 +56,14 @@ def _recursively_save_dict(h5file, path, dic):
         if isinstance(item, dict):
             group = h5file.require_group(f"{path}/{key}")
             _recursively_save_dict(h5file, group.name, item)
-        elif isinstance(item, np.ndarray):
-            h5file.create_dataset(f"{path}/{key}", data=item)
         else:
-            raise TypeError(f"Unsupported type {type(item)} at {path}")
+            h5file.create_dataset(f"{path}/{key}", data=item)
 
 
-def load_dict(filename: str):
+def load_dict(filename="tile_data"):
+    filepath = path + filename + extension
     try:
-        with h5py.File(path+filename, 'r') as h5file:
+        with h5py.File(filepath, 'r') as h5file:
             
             print("\nNow loading full data...\n")
             loaded_dict = _recursively_load_dict(h5file, '/')
@@ -73,9 +74,10 @@ def load_dict(filename: str):
         print(f"Error while loading {path}: {e}")
 
 
-def load_tiles_by_id(filename: str, tile_id: str):
+def load_tiles_by_id(tile_id: str, filename="tile_data"):
+    filepath = path + filename + extension
     try:
-        with h5py.File(path+filename, 'r') as h5file:
+        with h5py.File(filepath, 'r') as h5file:
             if tile_id not in h5file:
                 raise ValueError(f"ID '{tile_id}' not found in the HDF5 file.")
             
