@@ -1,8 +1,6 @@
 import h5py
-import numpy as np
 import os
 import tempfile
-import shutil
 
 path = '../data/saved_files/'
 extension = ".h5"
@@ -16,12 +14,6 @@ def create_hdf5_file(filename="tile_data"):
         print(f"Empty HDF5 file '{filename}' created !")
     except OSError:
         print(f"File '{filename}' already exists. No changes made.")
-
-    
-import tempfile
-import shutil
-import os
-import h5py
 
 def save_to_file(new_tiles, filename="tile_data"):
     final_path = path + filename + extension
