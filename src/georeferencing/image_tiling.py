@@ -1,22 +1,24 @@
 import numpy as np
-from PIL import Image
-from georeferencing import latlong_to_pixel, pixel_to_latlong
-import os
 from model import TileData
-
+from pyproj import Transformer
+from data import data_access
+import georeferencing as geo 
 TILES_OUPTUT_FOLDER = "../data/tiles/"
 
-def split_image_by_latlon(skraafoto_item_json, image, lat_steps, lon_steps):
+def split_image_by_latlon(skraafoto_item_json, lat_steps, lon_steps):
     """
-    Splits an image into tiles based on lat/lon space. Saves tiles as jpeg. Computes Homographies.
+    Splits an image into tiles based on lat/lon space. Computes Homographies for each tile. Saves tile data to .h5.
 
     :param skraafoto_item_json: Skraafoto STAC Item 
     :param image: Skraafoto Image as a byte array 
     :param lat_steps: Number of divisions along latitude
     :param lon_steps: Number of divisions along longitude
-    :return: Dictionary {stac_item_id: list of tiles}
+    :return: List of processed tiles
     """
-    img_height, img_width = image.shape[:2]
+    img_height, img_width = skraafoto_item_json['properties']['proj:shape'][:2]
+
+    transformer = Transformer.from_crs("EPSG:4326", f"EPSG:{skraafoto_item_json['properties']['pers:crs']}", always_xy=True)
+    projection_parameters = geo.precompute_projection_params(skraafoto_item_json)
  
     lon_min, lat_min, lon_max, lat_max = skraafoto_item_json['bbox'] 
     
@@ -41,7 +43,7 @@ def split_image_by_latlon(skraafoto_item_json, image, lat_steps, lon_steps):
                 (tile_lat_max, tile_lon_max)
             ]
 
-            pixel_coords = [latlong_to_pixel.latlon_to_pixel(lat, lon, skraafoto_item_json) for lat, lon in corners_latlon]
+            pixel_coords = [geo.latlon_to_pixel(lat, lon, transformer, projection_parameters) for lat, lon in corners_latlon]
 
             x_pixels = [pt[0] for pt in pixel_coords]
             y_pixels = [pt[1] for pt in pixel_coords]
@@ -66,19 +68,9 @@ def split_image_by_latlon(skraafoto_item_json, image, lat_steps, lon_steps):
                 "y_max": y_max
             }
 
-            tile_path = _save_tile(image[y_min:y_max, x_min:x_max], tile_bounds_latlon, f"{TILES_OUPTUT_FOLDER}{skraafoto_item_json['id']}")
-            tile = TileData(tile_path, tile_bounds_latlon, pixel_bounds)
-            tile = pixel_to_latlong.compute_homography_for_tile(tile, skraafoto_item_json)
-            tiles_dict[skraafoto_item_json['id']].append(tile)
-
-    return tiles_dict
-
-    
-def _save_tile(tile_img, tile_bounds_latlon, output_folder):
-    os.makedirs(output_folder, exist_ok=True)
-    tile_img = Image.fromarray(tile_img)
-    filename = f"tile[{tile_bounds_latlon['lon_min']},{tile_bounds_latlon['lat_min']},{tile_bounds_latlon['lon_max']},{tile_bounds_latlon['lat_max']}].jpeg"
-    file_path = os.path.join(output_folder, filename)
-    tile_img.save(file_path) 
-    return file_path
-               
+            tile = TileData(tile_bounds_latlon, pixel_bounds)
+            tile = geo.compute_homography_for_tile(tile, transformer, projection_parameters)
+            tiles_dict[skraafoto_item_json['id']].append(tile.to_dict())
+            
+    data_access.save_to_file(tiles_dict)
+    return tiles_dict[skraafoto_item_json['id']]

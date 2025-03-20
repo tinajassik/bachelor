@@ -1,8 +1,6 @@
 import h5py
-import numpy as np
 import os
 import tempfile
-import shutil
 
 path = '../data/saved_files/'
 extension = ".h5"
@@ -17,41 +15,52 @@ def create_hdf5_file(filename="tile_data"):
     except OSError:
         print(f"File '{filename}' already exists. No changes made.")
 
-    
 def save_to_file(new_tiles, filename="tile_data"):
     final_path = path + filename + extension
     
     temp_fd, temp_file_path = tempfile.mkstemp(suffix='.h5')
     
     try:
-        os.close(temp_fd)  
-
-        with h5py.File(temp_file_path, 'w') as hf:
+        os.close(temp_fd) 
+        
+        with h5py.File(temp_file_path, 'w') as temp_hf:
             for group in new_tiles:
                 print(f"Saving group: {group}")
                 
-                group_node = hf.create_group(group)
-                
-                for idx, tile in enumerate(new_tiles[group]):
-                    _recursively_save_dict(hf, f"{group_node.name}/{idx}", tile)
+                group_node = temp_hf.create_group(group)
 
-    
-        shutil.move(temp_file_path, final_path)
+                for idx, tile in enumerate(new_tiles[group]):
+                    _recursively_save_dict(temp_hf, f"{group_node.name}/{idx}", tile)
         
-        print(f"Data successfully saved to '{filename}'")
+        os.remove(temp_file_path)
+
+        with h5py.File(final_path, 'a') as original_hf:
+            for group in new_tiles:
+                print(f"Appending group: {group}")
+                
+                if group not in original_hf:
+                    group_node = original_hf.create_group(group)
+                else:
+                    group_node = original_hf[group]
+
+                for idx, tile in enumerate(new_tiles[group]):
+                    _recursively_save_dict(original_hf, f"{group_node.name}/{idx}", tile)
+
+        print(f"Data successfully appended to '{filename}'")
 
     except Exception as e:
         print(f"Error while saving '{filename}': {e}")
-
+        
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
-            print(f"Temporary file '{temp_file_path}' removed.")
+            print(f"Temporary file '{temp_file_path}' removed.") 
+
 
                                             
 def _recursively_save_dict(h5file, path, dic):
-    
     if not isinstance(dic, dict): 
         dic = dic.to_dict()
+        
     for key, item in dic.items():
         if isinstance(item, dict):
             group = h5file.require_group(f"{path}/{key}")

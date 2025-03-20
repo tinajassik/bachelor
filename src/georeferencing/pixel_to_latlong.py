@@ -1,19 +1,20 @@
 import numpy as np
 import cv2
 import numpy as np
-from georeferencing.latlong_to_pixel import latlon_to_pixel
+import georeferencing as geo
 from model import TileData
+from data import data_access
+from api import skraafoto
 
-def compute_homography_for_tile(tile: TileData, original_skraafoto_item):
+def compute_homography_for_tile(tile: TileData, transformer, projection_parameters):
     tile_bbox = tile.tile_bounds_latlon
     lon_tile_min = tile_bbox['lon_min']
     lon_tile_max = tile_bbox['lon_max']
     lat_tile_min = tile_bbox['lat_min']
     lat_tile_max = tile_bbox['lat_max']
-
+   
     world_points = generate_real_world_points(lon_tile_min, lat_tile_min, lon_tile_max, lat_tile_max)
-    pixel_points = np.array([latlon_to_pixel(lat,lon, original_skraafoto_item) for lon, lat in world_points])
-
+    pixel_points = np.array([geo.latlon_to_pixel(lat,lon, transformer, projection_parameters) for lon, lat in world_points])
     homography = _compute_homography(pixel_points, world_points)
     tile.homography = homography
 
@@ -35,7 +36,7 @@ def convert_pixel_to_world_homography(x, y, H):
 
     return world_x, world_y
 
-def get_tile_for_pixel(pixel_x, pixel_y, skraafoto_item_id, tiles):
+def get_tile_for_pixel(pixel_x, pixel_y, skraafoto_item_id):
     """
     Determines which tile the given pixel belongs to by checking its pixel bounding box. If no tile found, raises an exception. 
 
@@ -45,10 +46,18 @@ def get_tile_for_pixel(pixel_x, pixel_y, skraafoto_item_id, tiles):
     :param tiles: Dictionary of tiles
     :return: The correct tile 
     """
-    filtered_tiles = tiles.get(skraafoto_item_id)
+    try:
+        filtered_tiles = data_access.load_tiles_by_id(skraafoto_item_id)
+        print(f"Tiles belonging to STAC item ID {skraafoto_item_id} loaded from storage.")
+    except:
+        print("Skraafoto image with the given ID has not been processed yet.")
+        print("Starting image tiling..")
+        skraafoto_item = skraafoto.fetch_skraafoto_item(skraafoto_item_id)
+        filtered_tiles = geo.split_image_by_latlon(skraafoto_item,4,4)
+
 
     for tile in filtered_tiles:
-        pixel_bbx = tile.pixel_bounds
+        pixel_bbx = tile['pixel_bounds']
         x_min = pixel_bbx['x_min']
         x_max = pixel_bbx['x_max']
         y_min = pixel_bbx['y_min']
@@ -75,7 +84,7 @@ def generate_real_world_points(lon_min, lat_min, lon_max, lat_max, grid_size=10)
 
     lon_grid, lat_grid = np.meshgrid(lon_values, lat_values)
 
-    grid_points = np.column_stack([lon_grid.ravel(), lat_grid.ravel()])
+    grid_points = np.stack([lon_grid.ravel(), lat_grid.ravel()], axis=1)
 
     return grid_points;
 
