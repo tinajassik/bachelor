@@ -20,13 +20,8 @@ def create_hdf5_file(filename="tile_data"):
     
 def save_to_file(new_tiles, filename="tile_data"):
     final_path = path + filename + extension
-    
-    temp_fd, temp_file_path = tempfile.mkstemp(suffix='.h5')
-    
     try:
-        os.close(temp_fd)  
-
-        with h5py.File(temp_file_path, 'w') as hf:
+        with h5py.File(final_path, 'a') as hf:
             for group in new_tiles:
                 print(f"Saving group: {group}")
                 
@@ -34,24 +29,17 @@ def save_to_file(new_tiles, filename="tile_data"):
                 
                 for idx, tile in enumerate(new_tiles[group]):
                     _recursively_save_dict(hf, f"{group_node.name}/{idx}", tile)
-
-    
-        shutil.move(temp_file_path, final_path)
         
         print(f"Data successfully saved to '{filename}'")
 
     except Exception as e:
         print(f"Error while saving '{filename}': {e}")
 
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
-            print(f"Temporary file '{temp_file_path}' removed.")
-
                                             
 def _recursively_save_dict(h5file, path, dic):
-    
     if not isinstance(dic, dict): 
         dic = dic.to_dict()
+        
     for key, item in dic.items():
         if isinstance(item, dict):
             group = h5file.require_group(f"{path}/{key}")
