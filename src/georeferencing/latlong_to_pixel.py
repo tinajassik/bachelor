@@ -1,9 +1,70 @@
-from pyproj import Transformer
-from sympy import Matrix, eye
 from api import elevation
+import numpy as np
+
+def latlon_to_pixel(latitude, longitude, transformer, KRT):
+    """
+    Converts latitude/longitude to pixel coordinates on a Skraafoto image.
+
+    :param latitude: Latitude coordinate.
+    :param longitude: Longitude coordinate.
+    :param transformer: Pyproj transformer that converts geographic coordinates to the correct reference system. 
+    :param KRT: Combined camera projection matrix. 
+    :return: (x_pixel, y_pixel) pixel coordinates on the image.
+    """
+    # convert lat/lon to the correct CRS
+    x_world, y_world = transformer.transform(longitude, latitude)
+    
+    # get the height value
+    z_world = _get_safe_elevation(x_world, y_world)
+
+    # Define the 3D Point in Homogeneous Coordinatess
+    point_3D = np.array([x_world, y_world, z_world, 1])
+
+    # Compute Pixel Mapping
+    mapping = KRT @ point_3D
+
+    # Normalize to get pixel coordinates
+    pixel_x = mapping[0] / mapping[2]
+    pixel_y = mapping[1] / mapping[2]
+
+    ## Final projected 2D point
+    projected_2D_point_final = (float(pixel_x), float(pixel_y))
+
+    return projected_2D_point_final
+
+def precompute_projection_params(skraafoto_item_json):
+    camera_params = _extract_camera_parameters(skraafoto_item_json)
+    m11, m12, m13, m21, m22, m23, m31, m32, m33 = camera_params["rotation_matrix"]
+    Xc, Yc, Zc = camera_params["camera_position"]
+    calculated_pixel_values = _calculate_pixel_values(camera_params)
+    f = calculated_pixel_values["f"]
+    x0 = calculated_pixel_values["x0"]
+    y0 = calculated_pixel_values["y0"]
+
+    # Rotaion Matrix 
+    R = np.array([
+        [m11, m12, m13],
+        [m21, m22, m23],
+        [m31, m32, m33]
+    ])
+
+    # Intrinsic Matrix 
+    K = np.array([
+        [-f, 0, x0],
+        [0, -f, y0],
+        [0, 0, 1]
+    ])
+
+    translation = np.array([[-Xc], [-Yc], [-Zc]])
+    # Translation Matrix 
+    T = np.hstack([np.eye(3), translation])
+
+    KRT = K @ R @ T
+
+    return KRT
 
 ## based on Skraafoto documentation for georeferencing
-def extract_camera_parameters(item_json):
+def _extract_camera_parameters(item_json):
     """
     Extracts camera parameters from the Skraafoto item JSON.
 
@@ -24,7 +85,7 @@ def extract_camera_parameters(item_json):
     return camera_params
 
 ## based on Skraafoto documentation for georeferencing
-def calculate_pixel_values(camera_params):
+def _calculate_pixel_values(camera_params):
     """
     Calculates pixel values using camera parameters.
 
@@ -44,99 +105,7 @@ def calculate_pixel_values(camera_params):
 
     return calculated_values
 
-def extract_crs_information(item_json):
-    """
-    Extracts CRS (coordinate reference system) information.
-
-    :param item_json: JSON response from the Skraafoto API.
-    :return: Dictionary containing CRS and image URL.
-    """
-    props = item_json["properties"]
-    
-    return {
-        "crs": props["pers:crs"],
-        "vertical_crs": props["pers:vertical_crs"]
-    }
-
-def extract_selected_image(item_json): 
-     props = item_json["properties"]
-     return  props["asset:data"]
-
-
-def latlon_to_pixel(latitude, longitude, skraafoto_item_json):
-    """
-    Converts latitude/longitude to pixel coordinates on a Skraafoto image.
-
-    :param latitude: Latitude coordinate.
-    :param longitude: Longitude coordinate.
-    :param crs: EPSG code for the projection.
-    :param camera_params: Dictionary with Skraafoto camera parameters.
-    :return: (x_pixel, y_pixel) pixel coordinates on the image.
-    """
-    
-    # convert lat/lon to the correct CRS
-    crs = extract_crs_information(skraafoto_item_json)['crs']
-    transformer = Transformer.from_crs("EPSG:4326", f"EPSG:{crs}", always_xy=True)
-    x_world, y_world = transformer.transform(longitude, latitude)
-    
-    # get the height value
-    z_world = get_safe_elevation(x_world, y_world)
-
-    # get camera parameters
-    camera_params = extract_camera_parameters(skraafoto_item_json);
-    m11, m12, m13, m21, m22, m23, m31, m32, m33 = camera_params["rotation_matrix"]
-    Xc, Yc, Zc = camera_params["camera_position"]
-    calculated_pixel_values = calculate_pixel_values(camera_params)
-    f = calculated_pixel_values["f"]
-    x0 = calculated_pixel_values["x0"]
-    y0 = calculated_pixel_values["y0"]
-    
-    # define Matrices
-
-    ## Rotation Matrix (R)
-    R = Matrix([
-        [m11, m12, m13],
-        [m21, m22, m23],
-        [m31, m32, m33]
-    ])
-
-    ## Camera Center (C)
-    C = Matrix([Xc, Yc, Zc])
-
-    ## Intrinsic Matrix (K)
-    K = Matrix([
-        [-f, 0, x0],
-        [0, -f, y0],
-        [0, 0, 1]
-    ])
-
-    ## Identity Matrix (I) for 3D Transformation
-    I = eye(3)
-
-    ## Translation Matrix (T)
-    translation = Matrix([[-Xc], [-Yc], [-Zc]])
-    T = Matrix.hstack(I, translation)
-
-    ## Compute K * R * T (Projection Matrix)
-    KRT = K * R * T
-
-    # Define the 3D Point in Homogeneous Coordinates
-    point_3D = Matrix([x_world, y_world, z_world, 1])
-
-    # Compute Pixel Mapping
-    mapping = KRT * point_3D
-
-    ## Normalize to get pixel coordinates
-    pixel_x = mapping[0] / mapping[2]
-    pixel_y = mapping[1] / mapping[2]
-
-    ## Final projected 2D point
-    projected_2D_point_final = (float(pixel_x), float(pixel_y))
-
-    return projected_2D_point_final
-
-
-def get_safe_elevation(x_world, y_world, fallback=31):
+def _get_safe_elevation(x_world, y_world, fallback=31):
     """
     Get elevation for (x_world, y_world). If it fails, try nearby points. 
     If all fail, return fallback elevation.
@@ -152,7 +121,7 @@ def get_safe_elevation(x_world, y_world, fallback=31):
     if z_world is not None:
         return z_world  
 
-    offsets = [-2, 0, 2]
+    offsets = [-0.1, 0, 0.1]
     for dx in offsets:
         for dy in offsets:
             z_world = elevation.get_elevation(x_world + dx, y_world + dy)
