@@ -2,11 +2,11 @@ import h5py
 import os
 import tempfile
 
-path = '../data/saved_files/'
+path = os.path.join("..","data", "saved_files")
 extension = ".h5"
 
 def create_hdf5_file(filename="tile_data"):
-    filepath = path+filename+extension
+    filepath = os.path.join(path, filename + extension)
     try:
         with h5py.File(filepath, 'w-') as h5file:
             pass
@@ -16,7 +16,7 @@ def create_hdf5_file(filename="tile_data"):
         print(f"File '{filename}' already exists. No changes made.")
 
 def save_to_file(new_tiles, filename="tile_data"):
-    final_path = path + filename + extension
+    filepath = os.path.join(path, filename + extension)
     
     temp_fd, temp_file_path = tempfile.mkstemp(suffix='.h5')
     
@@ -34,7 +34,7 @@ def save_to_file(new_tiles, filename="tile_data"):
         
         os.remove(temp_file_path)
 
-        with h5py.File(final_path, 'a') as original_hf:
+        with h5py.File(filepath, 'a') as original_hf:
             for group in new_tiles:
                 print(f"Appending group: {group}")
                 
@@ -70,7 +70,7 @@ def _recursively_save_dict(h5file, path, dic):
 
 
 def load_dict(filename="tile_data"):
-    filepath = path + filename + extension
+    filepath = os.path.join(path, filename + extension)
     try:
         with h5py.File(filepath, 'r') as h5file:
             
@@ -84,7 +84,7 @@ def load_dict(filename="tile_data"):
 
 
 def load_tiles_by_id(tile_id: str, filename="tile_data"):
-    filepath = path + filename + extension
+    filepath = os.path.join(path, filename + extension)
     try:
         with h5py.File(filepath, 'r') as h5file:
             if tile_id not in h5file:
@@ -124,5 +124,47 @@ def _recursively_load_dict(h5file, path):
             
     return result
 
+def save_fetched_item(item_id, item_metadata, filename="split_tiles"):
+    filepath = os.path.join(path, filename + extension)
 
-        
+    with h5py.File(filepath, "a") as hf:
+        if item_id in hf:
+            print(f"Group '{item_id}' already exists. Replacing it...")
+            del hf[item_id]
+
+        item_group = hf.create_group(item_id)
+
+        metadata_group_path = f"{item_group.name}/item_metadata"
+        _recursively_save_dict(hf, metadata_group_path, item_metadata)
+
+        print(f"Structure for '{item_id}' with item_metadata saved in {filename}.\n")
+    
+def add_tile_to_item(item_id, tile_metadata, tile_id, filename="split_tiles"):
+    filepath = os.path.join(path, filename + extension)
+
+    with h5py.File(filepath, "a") as hf:
+        if item_id not in hf:
+            print(f"Item '{item_id}' not found in {filepath}. Cannot add tile.")
+            return
+
+        item_group = hf[item_id]
+
+        tile_group_name = f"tile_{tile_id}"
+        if tile_group_name in item_group:
+            del item_group[tile_group_name]
+
+        tile_group = item_group.create_group(tile_group_name)
+
+        _recursively_save_dict(hf, tile_group.name, tile_metadata)
+
+def load_item_by_id(item_id, filename="split_tiles"):
+    filepath = os.path.join(path, filename + extension)
+
+    with h5py.File(filepath, "r") as hf:
+        if item_id not in hf:
+            print(f"Item '{item_id}' not found in {filename}.")
+            return None
+
+        item_group_path = hf[item_id].name
+
+        return _recursively_load_dict(hf, item_group_path)
