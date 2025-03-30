@@ -7,6 +7,8 @@ import re
 
 images_to_split_path = os.path.join("..", "data", "skraafoto_images")
 
+
+
 def fetch_image(item_id):
     data = skraafoto.fetch_skraafoto_item(item_id)
 
@@ -36,13 +38,6 @@ def extract_tiles(item_id):
     max_cols, max_rows = math.ceil(img_width / tile_width), math.ceil(img_height / tile_height)
     num_tiles = max_cols * max_rows
 
-    item_metadata = {"item_id":item_id,
-                     "img_width":img_width,
-                     "img_height":img_height}
-
-    data_access.save_fetched_item(item_id, item_metadata,"split_tiles")
-
-
     for row in range(max_rows):
         for col in range(max_cols):
             x_min = col * tile_width
@@ -53,23 +48,6 @@ def extract_tiles(item_id):
             tile_filename = os.path.join(tiles_dir, f"{item_id}-{x_min}-{y_min}.jpg")
             cropped_image = image.crop((x_min, y_min, x_max, y_max))
             cropped_image.save(tile_filename)
-
-            metadata = {
-                "tile_filename": tile_filename,
-                "tile_width": tile_width,
-                "tile_height": tile_height,
-                "bbox": {
-                    "x_min": x_min,
-                    "y_min": y_min,
-                    "x_max": x_max,
-                    "y_max": y_max
-                },
-                "grid_column": col,
-                "grid_row": row
-            }
-            tile_id = f"{x_min}-{y_min}"
-            data_access.add_tile_to_item(item_id, metadata, tile_id)
-
 
     print(f"{num_tiles} tiles saved successfully for {item_id}.")
 

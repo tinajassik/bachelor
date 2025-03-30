@@ -24,7 +24,6 @@ pyproj = ">=3.7.0,<4.0.0"
 matplotlib = "^3.10.0"
 folium = "^0.19.4"
 h5py = "^3.13.0"
-setuptools = "^78.0.2"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
