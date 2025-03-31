@@ -4,6 +4,9 @@ from PIL import Image
 import math
 from data import data_access
 import re
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
+
 
 images_to_split_path = os.path.join("..", "data", "skraafoto_images")
 
@@ -29,8 +32,8 @@ def extract_tiles(item_id):
     image_path = os.path.join(images_to_split_path, item_id, item_id + ".tif")
     image = Image.open(image_path)
     img_width, img_height = image.size
-    tile_width = math.ceil(img_width * 0.10)
-    tile_height = math.ceil(img_height * 0.10)
+    tile_width = math.ceil(img_width * 0.1)
+    tile_height = math.ceil(img_height * 0.1)
 
     tiles_dir = os.path.join(os.path.dirname(image_path), "tiles")
     os.makedirs(tiles_dir, exist_ok=True)
@@ -45,7 +48,7 @@ def extract_tiles(item_id):
             x_max = min(x_min + tile_width, img_width)
             y_max = min(y_min + tile_height, img_height)
 
-            tile_filename = os.path.join(tiles_dir, f"{item_id}-{x_min}-{y_min}.jpg")
+            tile_filename = os.path.join(tiles_dir, f"{item_id}-{x_min}-{y_min}.tif")
             cropped_image = image.crop((x_min, y_min, x_max, y_max))
             cropped_image.save(tile_filename)
 
