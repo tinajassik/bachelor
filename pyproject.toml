@@ -9,7 +9,8 @@ readme = "README.md"
 packages = [
     { include = "api", from = "src" },
     { include = "georeferencing", from = "src" },
-    { include = "data", from = "src"}
+    { include = "data", from = "src"},
+    { include = "utils", from = "src"}
 ]
 
 [tool.poetry.dependencies]

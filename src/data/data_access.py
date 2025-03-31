@@ -2,11 +2,11 @@ import h5py
 import os
 import tempfile
 
-path = '../data/saved_files/'
+path = os.path.join("..","data", "saved_files")
 extension = ".h5"
 
 def create_hdf5_file(filename="tile_data"):
-    filepath = path+filename+extension
+    filepath = os.path.join(path, filename + extension)
     try:
         with h5py.File(filepath, 'w-') as h5file:
             pass
@@ -16,7 +16,7 @@ def create_hdf5_file(filename="tile_data"):
         print(f"File '{filename}' already exists. No changes made.")
 
 def save_to_file(new_tiles, filename="tile_data"):
-    final_path = path + filename + extension
+    filepath = os.path.join(path, filename + extension)
     
     temp_fd, temp_file_path = tempfile.mkstemp(suffix='.h5')
     
@@ -34,7 +34,7 @@ def save_to_file(new_tiles, filename="tile_data"):
         
         os.remove(temp_file_path)
 
-        with h5py.File(final_path, 'a') as original_hf:
+        with h5py.File(filepath, 'a') as original_hf:
             for group in new_tiles:
                 print(f"Appending group: {group}")
                 
@@ -70,7 +70,7 @@ def _recursively_save_dict(h5file, path, dic):
 
 
 def load_dict(filename="tile_data"):
-    filepath = path + filename + extension
+    filepath = os.path.join(path, filename + extension)
     try:
         with h5py.File(filepath, 'r') as h5file:
             
@@ -84,7 +84,7 @@ def load_dict(filename="tile_data"):
 
 
 def load_tiles_by_id(tile_id: str, filename="tile_data"):
-    filepath = path + filename + extension
+    filepath = os.path.join(path, filename + extension)
     try:
         with h5py.File(filepath, 'r') as h5file:
             if tile_id not in h5file:
@@ -123,6 +123,3 @@ def _recursively_load_dict(h5file, path):
         print(f"Error while loading path '{path}': {e}")
             
     return result
-
-
-        
