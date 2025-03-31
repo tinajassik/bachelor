@@ -2,15 +2,11 @@ import os
 from api import skraafoto
 from PIL import Image
 import math
-from data import data_access
 import re
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
 
-
 images_to_split_path = os.path.join("..", "data", "skraafoto_images")
-
-
 
 def fetch_image(item_id):
     data = skraafoto.fetch_skraafoto_item(item_id)
@@ -28,12 +24,12 @@ def fetch_image(item_id):
     print(f"Downloaded: {img_path}")
     return img_path
 
-def extract_tiles(item_id):
+def extract_tiles(item_id, grid_scale=0.1):
     image_path = os.path.join(images_to_split_path, item_id, item_id + ".tif")
     image = Image.open(image_path)
     img_width, img_height = image.size
-    tile_width = math.ceil(img_width * 0.1)
-    tile_height = math.ceil(img_height * 0.1)
+    tile_width = math.ceil(img_width * grid_scale)
+    tile_height = math.ceil(img_height * grid_scale)
 
     tiles_dir = os.path.join(os.path.dirname(image_path), "tiles")
     os.makedirs(tiles_dir, exist_ok=True)
