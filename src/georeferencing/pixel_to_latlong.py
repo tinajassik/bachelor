@@ -24,10 +24,7 @@ def compute_homography_for_tile(tile: TileData, transformer, projection_paramete
         tile.homography = np.array([[0,0,0],[0,0,0],[0,0,0]])
     else:
         homography = _compute_homography(np.array(pixel_points, dtype=np.float32), world_points)
-        if homography is None:
-            tile.homography = np.array([[0,0,0],[0,0,0],[0,0,0]])
-        else:
-            tile.homography = homography
+        tile.homography = homography
     return tile
 
 def convert_pixel_to_world_homography(x, y, H):
@@ -109,8 +106,5 @@ def _compute_homography(pixels, world_coords):
     pixels = np.array(pixels, dtype=np.float32)
     world_coords = np.array(world_coords, dtype=np.float32)
 
-    try:
-        H, _ = cv2.findHomography(pixels, world_coords, method=cv2.RANSAC)
-        return H
-    except:
-        return None
+    H, _ = cv2.findHomography(pixels, world_coords, method=cv2.RANSAC)
+    return H

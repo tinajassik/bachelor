@@ -123,7 +123,7 @@ def test_compute_homography_for_tile_with_mocked_latlon_to_pixel(mock_tile_data,
     tile : TileData = compute_homography_for_tile(mock_tile_data, mock_transformer, mock_projection_parameters)
 
     # Check if the homography matrix has the correct shape
-    assert tile.homography.shape == (3, 3) or (tile.homography.shape == (3, 3) and np.all(tile.homography == 0))
+    assert tile.homography is None or tile.homography.shape == (3, 3) or (tile.homography.shape == (3, 3) and np.all(tile.homography == 0))
 
 def test_compute_homography_for_tile_with_mocked_generate_real_world_points(mock_tile_data, mock_transformer, mock_projection_parameters, monkeypatch, mock_elevation):
     """
