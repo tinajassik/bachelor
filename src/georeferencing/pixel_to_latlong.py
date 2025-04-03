@@ -14,18 +14,11 @@ def compute_homography_for_tile(tile: TileData, transformer, projection_paramete
     lat_tile_max = tile_bbox['lat_max']
 
     world_points = generate_real_world_points(lon_tile_min, lat_tile_min, lon_tile_max, lat_tile_max)
-    pixel_points = []
-    for lon, lat in world_points:
-        pixel = geo.latlon_to_pixel(lat,lon, transformer, projection_parameters)
-        if pixel is not None:
-            pixel_points.append(pixel)
+    pixel_points = np.array([geo.latlon_to_pixel(lat,lon, transformer, projection_parameters) for lon, lat in world_points])
+    homography = _compute_homography(pixel_points, world_points)
+    tile.homography = homography
 
-    if len(pixel_points) < 4:
-        tile.homography = np.array([[0,0,0],[0,0,0],[0,0,0]])
-    else:
-        homography = _compute_homography(np.array(pixel_points, dtype=np.float32), world_points)
-        tile.homography = homography
-    return tile
+    return tile;
 
 def convert_pixel_to_world_homography(x, y, H):
     """
