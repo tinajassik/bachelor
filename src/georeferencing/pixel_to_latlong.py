@@ -12,20 +12,13 @@ def compute_homography_for_tile(tile: TileData, transformer, projection_paramete
     lon_tile_max = tile_bbox['lon_max']
     lat_tile_min = tile_bbox['lat_min']
     lat_tile_max = tile_bbox['lat_max']
-
+   
     world_points = generate_real_world_points(lon_tile_min, lat_tile_min, lon_tile_max, lat_tile_max)
-    pixel_points = []
-    for lon, lat in world_points:
-        pixel = geo.latlon_to_pixel(lat,lon, transformer, projection_parameters)
-        if pixel is not None:
-            pixel_points.append(pixel)
+    pixel_points = np.array([geo.latlon_to_pixel(lat,lon, transformer, projection_parameters) for lon, lat in world_points])
+    homography = _compute_homography(pixel_points, world_points)
+    tile.homography = homography
 
-    if len(pixel_points) < 4:
-        tile.homography = np.array([[0,0,0],[0,0,0],[0,0,0]])
-    else:
-        homography = _compute_homography(np.array(pixel_points, dtype=np.float32), world_points)
-        tile.homography = homography
-    return tile
+    return tile;
 
 def convert_pixel_to_world_homography(x, y, H):
     """
@@ -45,13 +38,13 @@ def convert_pixel_to_world_homography(x, y, H):
 
 def get_tile_for_pixel(pixel_x, pixel_y, skraafoto_item_id):
     """
-    Determines which tile the given pixel belongs to by checking its pixel bounding box. If no tile found, raises an exception.
+    Determines which tile the given pixel belongs to by checking its pixel bounding box. If no tile found, raises an exception. 
 
     :param pixel_x: X-coordinate of the pixel
     :param pixel_y: Y-coordinate of the pixel
-    :param skraafoto_item_id: ID of the image chosen pixels belong to
+    :param skraafoto_item_id: ID of the image chosen pixels belong to 
     :param tiles: Dictionary of tiles
-    :return: The correct tile
+    :return: The correct tile 
     """
     try:
         filtered_tiles = data_access.load_tiles_by_id(skraafoto_item_id)
@@ -69,20 +62,20 @@ def get_tile_for_pixel(pixel_x, pixel_y, skraafoto_item_id):
         x_max = pixel_bbx['x_max']
         y_min = pixel_bbx['y_min']
         y_max = pixel_bbx['y_max']
-
+    
         print(f"Bounding Box in Pixels: x_min={x_min}, x_max={x_max}, y_min={y_min}, y_max={y_max}")
         print(f"Checking if ({pixel_x}, {pixel_y}) falls inside...\n")
 
         if x_min <= pixel_x <= x_max and y_min <= pixel_y <= y_max:
             return tile
-
+        
     raise Exception(f"Error: No matching tile found")
 
 def generate_real_world_points(lon_min, lat_min, lon_max, lat_max, grid_size=10):
     """
     Generates real-world latitude and longitude points inside a tile's bounding box.
-
-    :param lon_min, lat_min, lon_max, lat_max: Tile bbox
+    
+    :param lon_min, lat_min, lon_max, lat_max: Tile bbox 
     :param num_points: Number of real-world points to generate
     :return: NumPy array of (lon, lat) real-world coordinates
     """
