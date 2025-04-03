@@ -1,16 +1,11 @@
 import numpy as np
-import cv2
 import pytest
 from unittest.mock import MagicMock, patch
-from georeferencing.latlong_to_pixel import latlon_to_pixel, precompute_projection_params, _get_safe_elevation
-from georeferencing.pixel_to_latlong import compute_homography_for_tile, generate_real_world_points, _compute_homography
+from georeferencing.latlong_to_pixel import  precompute_projection_params
+from georeferencing.pixel_to_latlong import compute_homography_for_tile, _compute_homography
 from model import TileData
-from data import data_access
-from api import skraafoto, elevation
-from georeferencing.image_tiling import split_image_by_latlon
 from pyproj import Transformer
 
-# Mock data for testing
 @pytest.fixture
 def mock_skraafoto_item():
     return {
@@ -84,10 +79,8 @@ def test_compute_homography_for_tile_sanity(mock_tile_data, mock_transformer, mo
     Test if the computed homography matrix contains reasonable values.
     """
     tile = compute_homography_for_tile(mock_tile_data, mock_transformer, mock_projection_parameters)
-    # Check if the homography matrix contains NaN or infinite values
     assert not np.isnan(tile.homography).any()
     assert not np.isinf(tile.homography).any()
-    # Check if the homography matrix is not all zeros
     assert not np.all(tile.homography == 0)
 
 def test_compute_homography_for_tile_output_values(mock_tile_data, mock_transformer, mock_projection_parameters, mock_elevation):
@@ -95,18 +88,14 @@ def test_compute_homography_for_tile_output_values(mock_tile_data, mock_transfor
     Test if the outputted homography matrix is correct.
     """
     tile = compute_homography_for_tile(mock_tile_data, mock_transformer, mock_projection_parameters)
-    # Check if the homography matrix is not all zeros
     assert not np.all(tile.homography == 0)
-    # Check if the homography matrix is not the identity matrix
     assert not np.allclose(tile.homography, np.eye(3))
 
 def test_compute_homography_for_tile_with_mocked_latlon_to_pixel(mock_tile_data, mock_transformer, mock_projection_parameters, monkeypatch, mock_elevation):
     """
     Test compute_homography_for_tile with a mocked latlon_to_pixel function.
     """
-    # Mock latlon_to_pixel to return a fixed value
     def mock_latlon_to_pixel(lat, lon, transformer, projection_parameters):
-        # Return different pixel coordinates based on the input
         if lat == 55.0 and lon == 10.0:
             return [100, 100]
         elif lat == 55.0 and lon == 10.1:
@@ -122,39 +111,30 @@ def test_compute_homography_for_tile_with_mocked_latlon_to_pixel(mock_tile_data,
 
     tile : TileData = compute_homography_for_tile(mock_tile_data, mock_transformer, mock_projection_parameters)
 
-    # Check if the homography matrix has the correct shape
     assert tile.homography is None or tile.homography.shape == (3, 3) or (tile.homography.shape == (3, 3) and np.all(tile.homography == 0))
 
 def test_compute_homography_for_tile_with_mocked_generate_real_world_points(mock_tile_data, mock_transformer, mock_projection_parameters, monkeypatch, mock_elevation):
     """
     Test compute_homography_for_tile with a mocked generate_real_world_points function.
     """
-    # Mock generate_real_world_points to return a fixed value
     mock_generate_real_world_points = MagicMock(return_value=np.array([[10.0, 55.0], [10.1, 55.1], [10.0, 55.1], [10.1, 55.0]]))
     monkeypatch.setattr("georeferencing.pixel_to_latlong.generate_real_world_points", mock_generate_real_world_points)
 
     tile = compute_homography_for_tile(mock_tile_data, mock_transformer, mock_projection_parameters)
 
-    # Check if generate_real_world_points was called once
     mock_generate_real_world_points.assert_called_once()
 
-    # Check if the homography matrix has the correct shape
     assert tile.homography.shape == (3, 3)
 
 def test_compute_homography_for_tile_with_mocked__compute_homography(mock_tile_data, mock_transformer, mock_projection_parameters, monkeypatch, mock_elevation):
     """
     Test compute_homography_for_tile with a mocked _compute_homography function.
     """
-    # Mock _compute_homography to return a fixed value
     mock__compute_homography = MagicMock(return_value=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
     monkeypatch.setattr("georeferencing.pixel_to_latlong._compute_homography", mock__compute_homography)
 
     tile = compute_homography_for_tile(mock_tile_data, mock_transformer, mock_projection_parameters)
-
-    # Check if _compute_homography was called once
     mock__compute_homography.assert_called_once()
-
-    # Check if the homography matrix has the correct shape
     assert tile.homography.shape == (3, 3)
     assert np.array_equal(tile.homography, np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
 
@@ -183,10 +163,8 @@ def test__compute_homography_sanity():
     pixels = np.array([[1, 1], [2, 2], [3, 3], [4, 4]], dtype=np.float32)
     world_coords = np.array([[10, 10], [20, 20], [30, 30], [40, 40]], dtype=np.float32)
     H = _compute_homography(pixels, world_coords)
-    # Check if the homography matrix contains NaN or infinite values
     assert not np.isnan(H).any()
     assert not np.isinf(H).any()
-    # Check if the homography matrix is not all zeros
     assert not np.all(H == 0)
 
 def test__compute_homography_output_values():
@@ -196,7 +174,5 @@ def test__compute_homography_output_values():
     pixels = np.array([[1, 1], [2, 2], [3, 3], [4, 4]], dtype=np.float32)
     world_coords = np.array([[10, 10], [20, 20], [30, 30], [40, 40]], dtype=np.float32)
     H = _compute_homography(pixels, world_coords)
-    # Check if the homography matrix is not all zeros
     assert not np.all(H == 0)
-    # Check if the homography matrix is not the identity matrix
     assert not np.allclose(H, np.eye(3))
