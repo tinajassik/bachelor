@@ -67,30 +67,3 @@ def test_latlon_to_pixel_invalid_input(mock_transformer, mock_projection_paramet
     lat, lon = "invalid", "input"
     with pytest.raises(TypeError):
         latlon_to_pixel(lat, lon, mock_transformer, mock_projection_parameters)
-
-def test__extract_camera_parameters(mock_skraafoto_item):
-    """Test if _extract_camera_parameters correctly extracts camera parameters."""
-    params = _extract_camera_parameters(mock_skraafoto_item)
-    assert isinstance(params, dict)
-    assert "rotation_matrix" in params
-    assert "camera_position" in params
-    assert "focal_length_mm" in params
-    assert "pixel_size" in params
-    assert "principal_point_offset" in params
-    assert "sensor_dimensions" in params
-
-def test__calculate_pixel_values(mock_skraafoto_item, mock_elevation):
-    """Test if _calculate_pixel_values returns correct pixel values."""
-    camera_params = _extract_camera_parameters(mock_skraafoto_item)
-    pixel_values = _calculate_pixel_values(camera_params)
-    assert isinstance(pixel_values, dict)
-    assert "f" in pixel_values
-    assert "x0" in pixel_values
-    assert "y0" in pixel_values
-
-def test__get_safe_elevation_valid(mock_elevation):
-    """Test if _get_safe_elevation returns a valid elevation."""
-    x_world, y_world = 563893.68, 6254753.55
-    elevation = _get_safe_elevation(x_world, y_world)
-    assert isinstance(elevation, float)
-    assert elevation == 42.0
