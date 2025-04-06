@@ -1,7 +1,7 @@
 from PIL import Image
 import io
 import numpy as np
-from api import skraafoto
+from services import skraafoto
 
 def extract_selected_image(item_json): 
      props = item_json["properties"]

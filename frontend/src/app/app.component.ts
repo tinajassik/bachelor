@@ -1,31 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { BackendApiService } from './services/backend-api/backend-api.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { ApiService } from './services/api.service';
-import { Observable } from 'rxjs';
+import { SkraafotoComponent } from './components/skraafoto/skraafoto.component';
 
 @Component({
   selector: 'app-root',
+  imports: [CommonModule, SkraafotoComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  standalone: true,
-  imports: [CommonModule, RouterModule]
+  styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'frontend';
-  apiResponse: any = null; // ✅ Initialize to avoid undefined errors
+  responseTest =  undefined;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private backendApiService: BackendApiService){}
 
-  ngOnInit(): void {
-    this.apiService.fetchTest().subscribe(
-      data => {
-        console.log('API Response:', data);
-        this.apiResponse = data; // ✅ Assign response to the variable
-      },
-      error => {
-        console.error('API Error:', error);
-      }
-    );
+
+  ngOnInit() {
+    this.backendApiService.fetchTest().subscribe(r => {
+      this.responseTest = r.message
+    })
   }
 }
