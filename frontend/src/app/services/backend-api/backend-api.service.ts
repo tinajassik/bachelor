@@ -15,10 +15,6 @@ export class BackendApiService {
     return this.http.get(`${this.API_BASE_URL}test`);
   }
 
-  // fetchImage(imageUrl: string): Observable<Blob> {
-  //   return this.http.get(imageUrl, { responseType: 'blob' });
-  // }
-
   getStacItemById(stacItemId: string): Observable<any> {
     return this.http.get(this.API_BASE_URL+"item", { params: { item_id: stacItemId }, responseType: 'json' });
   }
