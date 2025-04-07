@@ -25,7 +25,9 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
+        working-directory: backend
         run: poetry install
 
       - name: Run tests
+        working-directory: backend
         run: poetry run pytest
