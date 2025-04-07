@@ -1,0 +1,21 @@
+<form>
+    <mat-form-field>
+        <mat-label>STAC Item ID</mat-label>
+        <input matInput [(ngModel)]="stacItemId" name="stacItemId">
+    </mat-form-field>
+    <button mat-flat-button [disabled]="!stacItemId" (click)="onFetch()">Fetch Item</button>
+</form>
+
+<div *ngIf="loading" style="margin-top: 1rem;">Fetching item image...</div>
+
+<div *ngIf="error" style="color: red; margin-top: 1rem;">
+  {{ error }}
+</div>
+
+<div *ngIf="imageUrl && !loading" style="margin-top: 1rem;">
+  <img [src]="imageUrl" alt="Fetched STAC Item" style="max-width: 100%; height: auto;">
+</div>
+
+<div *ngIf="!imageUrl && !loading && !error">
+    <p>No image loaded</p>
+</div>
