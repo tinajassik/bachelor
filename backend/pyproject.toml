@@ -28,6 +28,7 @@ fastapi = "^0.115.8"
 uvicorn = "^0.34.0"
 folium = "^0.19.4"
 h5py = "^3.13.0"
+pytest = "^8.3.5"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
