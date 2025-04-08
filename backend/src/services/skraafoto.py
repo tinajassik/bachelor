@@ -1,7 +1,7 @@
 from http.client import HTTPException
 import requests
 from fastapi import Response
-from backend.config import SKRAAFOTO_TOKEN
+from config import SKRAAFOTO_TOKEN
 
 HEADERS = {'token': SKRAAFOTO_TOKEN}     
 
