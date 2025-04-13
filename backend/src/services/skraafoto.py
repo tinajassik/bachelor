@@ -68,13 +68,14 @@ def fetch_skraafoto_item_bbox(lat1, lon1, lat2, lon2, limit=10):
     bbox = [lon1, lat1, lon2, lat2]
     
     params = {
+        "collections":"skraafotos2023",
         "bbox": ",".join(map(str, bbox)),
         "limit": limit
     }
     
     headers = {
         "token": TOKEN,
-        "Content-Type": "application/geo+json"
+        "Content-Type": "application/geo+json",
     }
     
     response = requests.get(API_URL, params=params, headers=headers)
