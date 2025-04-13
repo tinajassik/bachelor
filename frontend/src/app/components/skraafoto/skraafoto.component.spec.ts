@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SkraafotoComponent } from './skraafoto.component';
+import { provideHttpClient } from '@angular/common/http';
+import { BackendApiService } from '../../services/backend-api/backend-api.service';
 
 describe('SkraafotoComponent', () => {
   let component: SkraafotoComponent;
@@ -8,7 +10,11 @@ describe('SkraafotoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SkraafotoComponent]
+      imports: [SkraafotoComponent],
+      providers: [
+        provideHttpClient(),
+        BackendApiService,
+      ]
     })
     .compileComponents();
 
