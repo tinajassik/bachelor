@@ -4,7 +4,7 @@ import {MatButtonModule} from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { BackendApiService } from '../../services/backend-api/backend-api.service';
 import { CommonModule } from '@angular/common';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-skraafoto',
@@ -15,10 +15,13 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 export class SkraafotoComponent {
 
-  stacItemId: string | undefined = undefined;
+  stacItemId: string | null = null;
   imageUrl: SafeUrl | null = null;
   loading: boolean = false;
   error: string | null = null;
+  pixelX: number | null = null;
+  pixelY: number | null = null;
+  geoCoords: { lat: number; lon: number; mapUrl: SafeResourceUrl} | null = null;
 
   constructor(private backendService: BackendApiService, private sanitizer: DomSanitizer) {
 
@@ -55,7 +58,20 @@ export class SkraafotoComponent {
         this.loading = false;
       }
     })
+  }
 
+  onGetGeoLocation() {
+    if (this.pixelX === null || this.pixelY === null || this.stacItemId === null) return;
+    this.geoCoords = null;
+
+    this.backendService.getGeoLocation(this.stacItemId, this.pixelX, this.pixelY).subscribe({
+      next: (result) => {
+        this.geoCoords = { lat: result.latitude, lon: result.longitude, mapUrl: this.sanitizer.bypassSecurityTrustResourceUrl(result.map_url)};
+      },
+      error: (err) => {
+        this.error = err.error.detail;
+      }
+    })
 
   }
 }

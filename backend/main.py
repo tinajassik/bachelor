@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api_routes import geo
+import os
+
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
-app.include_router(geo.router, prefix="/api/geo")
+app.include_router(geo.router)
 
-@app.get("/")
-def read_root():
-    return {"message": "Backend Up and Running! :)"}
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 app.add_middleware(
     CORSMiddleware,
