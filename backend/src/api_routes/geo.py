@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException
 import requests
 from services import skraafoto
+from georeferencing import pixel_to_latlong
+from model import GeoLocation
+from utils import plots
 
 router = APIRouter()
 
@@ -47,3 +50,20 @@ def fetch_skraafoto_image_thumbnail(tif_url: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+@router.get("/location")
+def get_geolocation_for_pixels(item_id: str, pixel_x: int, pixel_y: int):
+    """
+    Retrives geographic coordinates for specified pixels on a given image. Image is specified by item_id. 
+    Generates html with the transformed coordinates. 
+    """
+    try:
+        tile = pixel_to_latlong.get_tile_for_pixel(pixel_x, pixel_y, item_id);
+        geo_location = pixel_to_latlong.convert_pixel_to_world_homography(pixel_x, pixel_y, tile['homography'])
+        bbox = skraafoto.fetch_skraafoto_item(item_id)['bbox'];
+        plots.generate_map_with_projected_point(geo_location[1], geo_location[0], bbox,"projected_point_map");
+        return GeoLocation(geo_location[0],geo_location[1], "http://localhost:8000/static/maps/projected_point_map.html").to_dict();
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
+
