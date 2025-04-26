@@ -1,0 +1,37 @@
+<div class="content-container">
+    <div *ngIf="error" class="status-message error">{{ error }}</div>
+    <div class="media-wrapper">
+      <div
+        #imageRef
+        class="media-item"
+        id="canvas-overlay"
+      >
+      <ng-container *ngIf="imageUrl && !loading; else imagePlaceholder">
+        <img [src]="imageUrl" alt="Fetched STAC Item" (load)="onImageLoad()" />
+        <canvas
+          #canvasRef
+          *ngIf="imageUrl && !loading"
+          style="position: absolute; top: 0; left: 0; pointer-events: none"
+        ></canvas>
+      </ng-container>
+      <ng-template #imagePlaceholder>
+        <div class="placeholder">Selected area will be displayed here.
+            <div *ngIf="loading"> Fetching item image...</div>
+        </div>
+      </ng-template>
+    </div>
+      <div class="media-item">
+        <ng-container *ngIf="geoCoords?.mapUrl; else mapPlaceholder">
+        <iframe
+          [src]="geoCoords?.mapUrl || null"
+          width="100%"
+          height="100%"
+          style="border: none"
+        ></iframe>
+        </ng-container>
+        <ng-template #mapPlaceholder>
+            <div class="placeholder">Projected geographic location will be displayed here.</div>
+          </ng-template>
+      </div>
+    </div>
+  </div>
