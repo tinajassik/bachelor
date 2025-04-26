@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 import requests
 from services import skraafoto
 from georeferencing import pixel_to_latlong
 from model import GeoLocation
-from utils import plots
+from utils import plots, image_handler
+from data import data_access, image_access
 
 router = APIRouter()
 
@@ -67,3 +68,26 @@ def get_geolocation_for_pixels(item_id: str, pixel_x: int, pixel_y: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 
+@router.get("/items")
+def get_processed_stac_item_ids():
+    """
+    Retrieves a list of processed STAC Item ids. 
+    """
+    try:
+        return data_access.get_all_stac_ids();
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
+    
+@router.get("/image")
+def get_stac_item_image(item_id):
+    """
+    Retrieves a jpeg image of the selected location. If image is saved locally, it read bytes and returns them, else fetches an image from Skraafoto. 
+    """
+    try:
+        image_path = image_access.get_or_fetch_image_by_id(item_id)
+        img_jpeg = image_handler.convert_tiff_to_jpeg(image_path)
+        return Response(content=img_jpeg, media_type="image/jpeg")
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error while retrieving an image from Skraafoto: {e}")

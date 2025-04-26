@@ -1,58 +1,58 @@
-<form class="container">
-  <div class="input-group">
-    <mat-form-field>
-      <mat-label>STAC Item ID</mat-label>
-      <input matInput [(ngModel)]="stacItemId" name="stacItemId" />
-    </mat-form-field>
-    <button mat-flat-button [disabled]="!stacItemId" (click)="onFetch()">
-      Fetch Item
-    </button>
-  </div>
-  <div class="input-group">
-    <mat-form-field appearance="fill" class="xy-field">
-      <mat-label>Pixel X</mat-label>
-      <input matInput type="number" [(ngModel)]="pixelX" name="pixelX" />
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="xy-field">
-      <mat-label>Pixel Y</mat-label>
-      <input matInput type="number" [(ngModel)]="pixelY" name="pixelY" />
-    </mat-form-field>
-
-    <button
-      mat-flat-button
-      color="accent"
-      [disabled]="!pixelX || !pixelY"
-      (click)="onGetGeoLocation()"
-    >
-      Get Geo Location
-    </button>
-  </div>
-
-  <div class="status-message" *ngIf="geoCoords">
-    🌍 Geographic Location: <strong>{{ geoCoords.lat }}, {{ geoCoords.lon }}</strong>
-  </div>
-</form>
-
-
-<div class="content-container">
-  <div *ngIf="loading" class="status-message">Fetching item image...</div>
-  <div *ngIf="error" class="status-message error">{{ error }}</div>
-  <div class="media-wrapper">
-    <div class="media-item" *ngIf="imageUrl && !loading" class="image-container">
-      <img [src]="imageUrl" alt="Fetched STAC Item" />
-    </div> 
-    <div class="media-item" *ngIf="geoCoords?.mapUrl">
-      <iframe
-        [src]="geoCoords?.mapUrl || null"
-        width="100%"
-        height="100%"
-        style="border: none;"
-      ></iframe>
+<div class="form-wrapper">
+  <form class="container">
+    <div class="input-group">
+      <mat-form-field class="stac-field">
+        <mat-label>STAC Item ID</mat-label>
+        <input
+          matInput
+          [matAutocomplete]="auto"
+          [(ngModel)]="stacItemId"
+          name="stacItemId"
+        />
+        <mat-autocomplete #auto="matAutocomplete">
+          @for (option of availableStacItems; track option) {
+          <mat-option [value]="option">
+            {{ option }}
+          </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+      <button mat-flat-button class="fetch-button" [disabled]="!stacItemId" (click)="onFetch()">
+        Fetch Item
+      </button>
     </div>
-  </div>
+    <div class="input-group">
+      <mat-form-field appearance="fill" class="xy-field">
+        <mat-label>Pixel X</mat-label>
+        <input matInput type="number" [(ngModel)]="pixelX" name="pixelX" />
+      </mat-form-field>
   
-  <div *ngIf="!imageUrl && !loading && !error" class="status-message">
-    <p>No image loaded</p>
+      <mat-form-field appearance="fill" class="xy-field">
+        <mat-label>Pixel Y</mat-label>
+        <input matInput type="number" [(ngModel)]="pixelY" name="pixelY" />
+      </mat-form-field>
+  
+      <button
+        mat-flat-button
+        color="accent"
+        [disabled]="!pixelX || !pixelY"
+        (click)="onGetGeoLocation()"
+      >
+        Get Geo Location
+      </button>
+    </div>
+  
+    <div class="status-message" *ngIf="geoCoords">
+      🌍 Geographic Location:
+      <strong>{{ geoCoords.lat }}, {{ geoCoords.lon }}</strong>
+    </div>
+  </form>
+  <div class="thumbnail-preview" *ngIf="thumbnailUrl">
+    <img [src]="thumbnailUrl" alt="Thumbnail" />
   </div>
 </div>
+
+
+<app-location [geoCoords] = 'geoCoords' [error] = 'error' [loading] = 'loading' [imageUrl] = 'imageUrl'></app-location>
+
+

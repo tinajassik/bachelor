@@ -95,6 +95,15 @@ def load_tiles_by_id(tile_id: str):
         print(f"Error while loading {file_path}: {e}")
     return tiles_data
 
+def get_all_stac_ids():
+    try:
+        with h5py.File(file_path, 'r') as h5file:
+            ids = list(h5file.keys())
+            print(f"Found IDs: {ids}")
+            return ids
+    except Exception as e:
+        print(f"Error while reading IDs from '{file_path}': {e}")
+        return []
 
 def _recursively_load_dict(h5file, path):
     result = {}

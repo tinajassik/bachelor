@@ -22,10 +22,10 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('frontend');
   });
 
-  it('should render title', () => {
+  it('should render the header title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Bachelor Project');
-  });
+    expect(compiled.querySelector('.header-title')?.textContent).toContain('Bachelor Project');
+  });  
 });

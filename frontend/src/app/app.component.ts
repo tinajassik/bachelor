@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { BackendApiService } from './services/backend-api/backend-api.service';
 import { CommonModule } from '@angular/common';
-import { SkraafotoComponent } from './components/skraafoto/skraafoto.component';
 import { HeaderComponent } from './components/header/header.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, SkraafotoComponent, HeaderComponent],
+  imports: [CommonModule, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
