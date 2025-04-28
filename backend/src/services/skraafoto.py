@@ -75,7 +75,7 @@ def fetch_skraafoto_item_bbox(lat1, lon1, lat2, lon2, limit=10):
     
     headers = {
         "token": TOKEN,
-        "Content-Type": "application/geo+json",
+        "Content-Type": "application/geo+json"
     }
     
     response = requests.get(API_URL, params=params, headers=headers)
