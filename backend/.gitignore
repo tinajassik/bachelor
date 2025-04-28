@@ -62,3 +62,7 @@ build/
 *.tflite
 
 .env
+
+# Split images and labels
+*.jpg
+*.txt
