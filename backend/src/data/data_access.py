@@ -2,22 +2,20 @@ import h5py
 import os
 import tempfile
 
-path = os.path.join("..","data", "saved_files")
-extension = ".h5"
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+file_path = os.path.join(BASE_DIR, "data", "saved_files", "tile_data.h5")
 
 def create_hdf5_file(filename="tile_data"):
-    filepath = os.path.join(path, filename + extension)
     try:
-        with h5py.File(filepath, 'w-') as h5file:
+        with h5py.File(file_path, 'w-') as h5file:
             pass
         
         print(f"Empty HDF5 file '{filename}' created !")
     except OSError:
         print(f"File '{filename}' already exists. No changes made.")
 
+
 def save_to_file(new_tiles, filename="tile_data"):
-    filepath = os.path.join(path, filename + extension)
-    
     temp_fd, temp_file_path = tempfile.mkstemp(suffix='.h5')
     
     try:
@@ -34,7 +32,7 @@ def save_to_file(new_tiles, filename="tile_data"):
         
         os.remove(temp_file_path)
 
-        with h5py.File(filepath, 'a') as original_hf:
+        with h5py.File(file_path, 'a') as original_hf:
             for group in new_tiles:
                 print(f"Appending group: {group}")
                 
@@ -56,7 +54,6 @@ def save_to_file(new_tiles, filename="tile_data"):
             print(f"Temporary file '{temp_file_path}' removed.") 
 
 
-                                            
 def _recursively_save_dict(h5file, path, dic):
     if not isinstance(dic, dict): 
         dic = dic.to_dict()
@@ -69,10 +66,9 @@ def _recursively_save_dict(h5file, path, dic):
             h5file.create_dataset(f"{path}/{key}", data=item)
 
 
-def load_dict(filename="tile_data"):
-    filepath = os.path.join(path, filename + extension)
+def load_dict():
     try:
-        with h5py.File(filepath, 'r') as h5file:
+        with h5py.File(file_path, 'r') as h5file:
             
             print("\nNow loading full data...\n")
             loaded_dict = _recursively_load_dict(h5file, '/')
@@ -80,13 +76,12 @@ def load_dict(filename="tile_data"):
         print("\nLoaded data:")
         print(loaded_dict)
     except Exception as e:
-        print(f"Error while loading {path}: {e}")
+        print(f"Error while loading {file_path}: {e}")
 
 
-def load_tiles_by_id(tile_id: str, filename="tile_data"):
-    filepath = os.path.join(path, filename + extension)
+def load_tiles_by_id(tile_id: str):
     try:
-        with h5py.File(filepath, 'r') as h5file:
+        with h5py.File(file_path, 'r') as h5file:
             if tile_id not in h5file:
                 raise ValueError(f"ID '{tile_id}' not found in the HDF5 file.")
             
@@ -97,9 +92,18 @@ def load_tiles_by_id(tile_id: str, filename="tile_data"):
                 tile_data = _recursively_load_dict(h5file, f'/{tile_id}/{tile_key}')
                 tiles_data.append(tile_data)
     except Exception as e:
-        print(f"Error while loading {path}: {e}")
+        print(f"Error while loading {file_path}: {e}")
     return tiles_data
 
+def get_all_stac_ids():
+    try:
+        with h5py.File(file_path, 'r') as h5file:
+            ids = list(h5file.keys())
+            print(f"Found IDs: {ids}")
+            return ids
+    except Exception as e:
+        print(f"Error while reading IDs from '{file_path}': {e}")
+        return []
 
 def _recursively_load_dict(h5file, path):
     result = {}

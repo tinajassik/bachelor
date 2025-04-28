@@ -56,7 +56,7 @@ def fetch_images_by_bbox(lat1=55.61372384290898, lon1=12.374812877864615, lat2=5
     return images_id
     
 
-def extract_tiles(item_id, grid_scale=0.1):
+def extract_tiles(item_id, grid_scale=0.04):
     image_path = os.path.join(images_to_split_path, item_id, item_id + ".tif")
     image = Image.open(image_path)
     img_width, img_height = image.size

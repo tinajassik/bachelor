@@ -1,0 +1,22 @@
+.header-toolbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  a[mat-button] {
+    color: pink;
+    text-decoration: none;
+    font-weight: 400;
+  }
+  

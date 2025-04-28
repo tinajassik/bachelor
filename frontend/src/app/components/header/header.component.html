@@ -1,0 +1,29 @@
+<!-- <div class="header">
+   <h1>🌌Bachelor Project🌌</h1>
+</div> -->
+
+<mat-toolbar color="primary" class="header-toolbar">
+  <span class="header-title">Bachelor Project</span>
+  <span class="spacer"></span>
+  <a
+    mat-button
+    href="https://skraafoto.dataforsyningen.dk/?item=2023_82_24_2_0011_00000400&year=2023&center=574764%2C6220953&item-2=2023_82_24_2_0011_00000400&year-2=2023&orientation=north"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Browse aerial images
+  </a>
+</mat-toolbar>
+
+<mat-tab-group>
+  <mat-tab label="Pixel To LatLong conversion">
+    <div class="tab-content">
+      <app-skraafoto></app-skraafoto>
+    </div>
+  </mat-tab>
+  <mat-tab label="Object Detection">
+    <div class="tab-content">
+      <p>TBD. :)</p>
+    </div>
+  </mat-tab>
+</mat-tab-group>

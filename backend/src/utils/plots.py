@@ -2,6 +2,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import io
 import folium
+import os 
 
 def plot_pixel_on_image(projected_point, img): 
     image = Image.open(io.BytesIO(img.content))
@@ -30,4 +31,8 @@ def generate_map_with_projected_point(lat,lon, bbox, file_name):
         icon=folium.Icon(color="red", icon="info-sign")
     ).add_to(m)
     
-    m.save(f"{file_name}.html")
+    maps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "static", "maps"))
+    os.makedirs(maps_dir, exist_ok=True)
+
+    map_path = os.path.join(maps_dir, f"{file_name}.html")
+    m.save(map_path)
