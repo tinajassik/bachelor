@@ -66,3 +66,10 @@ build/
 # Split images and labels
 *.jpg
 *.txt
+
+# YOLOv8 file
+yolov8n.pt
+
+# YOLOv8 generated files
+args.yaml
+*.cache
