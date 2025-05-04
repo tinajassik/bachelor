@@ -3,9 +3,10 @@ import os
 import tempfile
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-file_path = os.path.join(BASE_DIR, "data", "saved_files", "tile_data.h5")
+DIR_PATH = os.path.join(BASE_DIR, "data")
 
-def create_hdf5_file(filename="tile_data"):
+def create_hdf5_file(save_dir=DIR_PATH, filename="tile_data"):
+    file_path = os.path.join(save_dir, filename + ".h5")
     try:
         with h5py.File(file_path, 'w-') as h5file:
             pass
@@ -15,7 +16,8 @@ def create_hdf5_file(filename="tile_data"):
         print(f"File '{filename}' already exists. No changes made.")
 
 
-def save_to_file(new_tiles, filename="tile_data"):
+def save_to_file(new_tiles, save_dir=DIR_PATH,filename="tile_data"):
+    file_path = os.path.join(save_dir, filename + ".h5")
     temp_fd, temp_file_path = tempfile.mkstemp(suffix='.h5')
     
     try:
@@ -66,7 +68,8 @@ def _recursively_save_dict(h5file, path, dic):
             h5file.create_dataset(f"{path}/{key}", data=item)
 
 
-def load_dict():
+def load_dict(save_dir=DIR_PATH,filename="tile_data"):
+    file_path = os.path.join(save_dir, filename + ".h5")
     try:
         with h5py.File(file_path, 'r') as h5file:
             
@@ -75,11 +78,13 @@ def load_dict():
         
         print("\nLoaded data:")
         print(loaded_dict)
+        return loaded_dict
     except Exception as e:
         print(f"Error while loading {file_path}: {e}")
 
 
-def load_tiles_by_id(tile_id: str):
+def load_tiles_by_id(tile_id: str, save_dir=DIR_PATH,filename="tile_data"):
+    file_path = os.path.join(save_dir, filename + ".h5")
     try:
         with h5py.File(file_path, 'r') as h5file:
             if tile_id not in h5file:
@@ -95,7 +100,8 @@ def load_tiles_by_id(tile_id: str):
         print(f"Error while loading {file_path}: {e}")
     return tiles_data
 
-def get_all_stac_ids():
+def get_all_stac_ids(save_dir=DIR_PATH,filename="tile_data"):
+    file_path = os.path.join(save_dir, filename + ".h5")
     try:
         with h5py.File(file_path, 'r') as h5file:
             ids = list(h5file.keys())
