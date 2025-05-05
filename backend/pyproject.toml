@@ -13,7 +13,7 @@ packages = [
     { include = "utils", from = "src" },
     { include = "services", from = "src" },
     { include = "logic", from = "src"},
-    { include = "object_detection", from "src"}
+    { include = "object_detection", from = "src"}
 ]
 
 [tool.poetry.dependencies]
