@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import patch
 from utils.tile_splitter_stat import (
     extract_tiles,
