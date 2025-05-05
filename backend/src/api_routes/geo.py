@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
 from services import skraafoto
-from logic import skraafoto_logic, georeferencing_logic, data_access_logic
+from logic import skraafoto_logic, georeferencing_logic, data_access_logic, car_detection_logic
 
 router = APIRouter()
 
@@ -46,3 +46,10 @@ def get_stac_item_image(item_id):
     Retrieves a jpeg image of the selected location. If image is saved locally, it read bytes and returns them, else fetches an image from Skraafoto. 
     """
     return data_access_logic.get_stac_item_jpeg(item_id)
+
+@router.post("/detect")
+async def detect_cars(file: UploadFile = File(...)):
+    """
+    Runs a prediction on the car detection model. Returns detection predictions and projected geographic locations.
+    """
+    return await car_detection_logic.detect_cars(file)
