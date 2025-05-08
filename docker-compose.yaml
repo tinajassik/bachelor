@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: ./backend # Path to the directory containing the backend Dockerfile
+      dockerfile: Dockerfile # Specifies the name of the Dockerfile (default is Dockerfile)
+    ports:
+      # Maps port 8000 on your host machine to port 8000 in the backend container
+      # This is where your Python/FastAPI app will be listening (as per your backend Dockerfile)
+      - "8000:8000"
+    volumes:
+      # Optional: For development, mount your backend source code into the container.
+      # This allows for live reloading if your Python framework supports it.
+      # For production, you'd typically not mount source code.
+      - ./backend/src:/app/src # Mounts your local 'src' to '/app/src' in the container
+    environment:
+      # This will take the value from your .env file at the project root
+      - SKRAAFOTO_TOKEN=${SKRAAFOTO_TOKEN}
+    # If your backend depends on a database service (not included here yet),
+    # you might add:
+    # depends_on:
+    #   - db
+
+  frontend:
+    build:
+      context: ./frontend # Path to the directory containing the frontend Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      # Maps port 8080 on your host machine to port 80 in the frontend container
+      # Nginx in your frontend container listens on port 80 by default
+      - "8080:80"
+    # depends_on:
+      # - backend # Uncomment if your frontend needs the backend to be up for some initial setup
+      #             # (usually not needed if API calls are dynamic)
