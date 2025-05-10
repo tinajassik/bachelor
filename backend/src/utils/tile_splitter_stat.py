@@ -82,11 +82,14 @@ def extract_tiles(item_id, grid_scale=0.04):
 
     print(f"{num_tiles} tiles saved successfully for {item_id}.")
 
-def find_pixel_position(tile_filename, pixel_x, pixel_y):
+def find_pixel_position(tile_filename, pixel_x, pixel_y, image_height):
     parts = re.split(r'[-.]', tile_filename)
     x_min = int(parts[1])
-    y_min = int(parts[2])
+    y_min = int(re.split(r'[_]', parts[2])[0])
 
     pixel_pos_x = x_min + pixel_x
-    pixel_pos_y = y_min + pixel_y
+    pixel_pos_y_image = y_min + pixel_y
+
+    # flip Y from top-left origin to bottom-left origin
+    pixel_pos_y = image_height - pixel_pos_y_image
     return pixel_pos_x,pixel_pos_y

@@ -1,7 +1,4 @@
-.form-wrapper {
-    display: flex;
-    justify-content: flex-start;
-}
+
 
 .container {
   max-width: 800px;
@@ -14,11 +11,6 @@
   align-items: flex-start;
 }
 
-.input-group {
-    display: flex;
-    gap: 0.5rem;
-    width: 100%;
-}
 
 button {
   height: 56px;
@@ -37,11 +29,6 @@ button {
 .xy-field {
     flex:1;
 }
-/* .content-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-} */
 
 .thumbnail-preview {
     margin: 0 auto;

@@ -34,4 +34,9 @@ export class BackendApiService {
   getAvailableStacItems(): Observable<any> {
     return this.http.get(this.API_BASE_URL+"items", {params: {responseType: 'json'}});
   }
+
+  detectCars(file: FormData): Observable<any> {
+    return this.http.post<any>(this.API_BASE_URL +"detect", file);
+  }
+
 }

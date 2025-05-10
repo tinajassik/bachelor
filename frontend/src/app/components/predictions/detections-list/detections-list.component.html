@@ -1,0 +1,21 @@
+<div *ngIf="detections.length > 0" class="detection-list">
+  <h3>Detected Cars</h3>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let det of detections">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Confidence: {{ det.confidence.toFixed(2) }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="detection-details">
+        <strong>Confidence:</strong> {{ det.confidence.toFixed(2) }} <br />
+        <strong>BBox:</strong> [{{ det.bbox.join(", ") }}] <br />
+        <ng-container *ngIf="det.geographic_coords">
+          <strong>Longitude:</strong> {{ det.geographic_coords[0] }} <br />
+          <strong>Latitude:</strong> {{ det.geographic_coords[1] }}
+        </ng-container>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

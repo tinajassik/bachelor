@@ -1,0 +1,16 @@
+<div class="map-container">
+    <ng-container *ngIf="geoCoords?.mapUrl; else mapPlaceholder">
+        <iframe
+          [src]="geoCoords?.mapUrl || null"
+          width="100%"
+          height="100%"
+          style="border: none"
+        ></iframe>
+      </ng-container>
+      <ng-template #mapPlaceholder>
+        <div class="placeholder">
+          Projected geographic location will be displayed here.
+        </div>
+      </ng-template>
+</div>
+

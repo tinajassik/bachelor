@@ -1,10 +1,11 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { MapComponent } from '../../map/map.component';
 
 @Component({
   selector: 'app-location',
-  imports: [CommonModule],
+  imports: [CommonModule, MapComponent],
   templateUrl: './location.component.html',
   styleUrl: './location.component.css',
 })
