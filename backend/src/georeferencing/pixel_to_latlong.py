@@ -53,7 +53,7 @@ def get_tile_for_pixel(pixel_x, pixel_y, skraafoto_item_id):
         print("Skraafoto image with the given ID has not been processed yet.")
         print("Starting image tiling..")
         skraafoto_item = skraafoto.fetch_skraafoto_item(skraafoto_item_id)
-        filtered_tiles = geo.split_image_by_latlon(skraafoto_item,4,4)
+        filtered_tiles = geo.split_image_by_latlon(skraafoto_item,5,5)
 
 
     for tile in filtered_tiles:
