@@ -15,6 +15,8 @@ services:
     environment:
       # This will take the value from your .env file at the project root
       - SKRAAFOTO_TOKEN=${SKRAAFOTO_TOKEN}
+      - HEIGHT_MODEL_USERNAME=${HEIGHT_MODEL_USERNAME}
+      - HEIGHT_MODEL_PASSWORD=${HEIGHT_MODEL_PASSWORD}
     # If your backend depends on a database service (not included here yet),
     # you might add:
     # depends_on:

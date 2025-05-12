@@ -3,9 +3,8 @@
 FROM python:3.11-slim
 
 # Update OS packages to try and mitigate known vulnerabilities
-# and install dependencies for OpenCV (cv2)
-RUN apt-get update && apt-get install -y libgl1-mesa-glx && apt-get upgrade -y && \
-    rm -rf /var/lib/apt/lists/*
+# and install dependencies for OpenCV (cv2) like libgl1 and libglib2.0
+RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0 && apt-get upgrade -y
 
 # Set essential environment variables
 ENV PYTHONUNBUFFERED=1 \
