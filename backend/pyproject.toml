@@ -1,20 +1,20 @@
 [tool.poetry]
 name = "bachelor-project"
 version = "0.1.0"
-description = ""
-authors = ["Tina","Ola"]
+description = "Car Detection and georeferencing - Bachelor Project"
+authors = ["Tina","Ola","Papp"]
 readme = "README.md"
 
-# Include both packages from "src/"
+# Include packages from "src/"
 packages = [
     { include = "api_routes", from = "src" },
     { include = "georeferencing", from = "src" },
     { include = "data", from = "src" },
     { include = "utils", from = "src" },
     { include = "services", from = "src" },
-    { include = "logic", from = "src"}
+    { include = "logic", from = "src"},
+    { include = "object_detection", from = "src"}
 ]
-
 
 [tool.poetry.dependencies]
 python = ">=3.11"
