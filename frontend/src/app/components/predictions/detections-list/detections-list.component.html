@@ -12,8 +12,8 @@
         <strong>Confidence:</strong> {{ det.confidence.toFixed(2) }} <br />
         <strong>BBox:</strong> [{{ det.bbox.join(", ") }}] <br />
         <ng-container *ngIf="det.geographic_coords">
-          <strong>Longitude:</strong> {{ det.geographic_coords[0] }} <br />
-          <strong>Latitude:</strong> {{ det.geographic_coords[1] }}
+          <strong>Longitude:</strong> {{ det.geographic_coords[1] }} <br />
+          <strong>Latitude:</strong> {{ det.geographic_coords[0] }}
         </ng-container>
       </div>
     </mat-expansion-panel>
