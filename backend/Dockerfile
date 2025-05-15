@@ -35,6 +35,10 @@ COPY main.py ./
 # Copy the 'src' directory if it contains other modules your main.py might use
 COPY src/ ./src/
 
+# Create the directory for the model and copy the model file
+RUN mkdir -p /app/car_detection_model
+COPY car_detection_model/best.pt /app/car_detection_model/best.pt
+
 # Create the 'static' directory as the application expects it, even if it's empty
 RUN mkdir -p /app/static
 
