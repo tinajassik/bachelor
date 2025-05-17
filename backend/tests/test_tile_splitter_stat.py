@@ -57,7 +57,8 @@ def test_find_pixel_position():
     """Testing finding correct pixel"""
     filename = "item-100-200.png"
     pixel_x, pixel_y = 10, 15
-    result = find_pixel_position(filename, pixel_x, pixel_y)
-    assert result == (110, 215)
+    image_height = 1000
+    result = find_pixel_position(filename, pixel_x, pixel_y, image_height)
+    assert result == (110, 785)
 
 
