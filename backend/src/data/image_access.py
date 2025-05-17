@@ -11,7 +11,7 @@ def get_or_fetch_image_by_id(stac_item_id) -> str:
     Check if the .tif image exists locally; if not, fetch and save it.
     Returns the path to the image file.
     """
-    base_dir = os.path.join(tif)
+    base_dir = os.path.join(TIF_IMAGES_DIR, stac_item_id)
     os.makedirs(TIF_IMAGES_DIR, exist_ok=True)
 
     file_name = f"{stac_item_id}.tif"
@@ -37,6 +37,11 @@ def get_cropped_images(stac_item_id) -> List[str]:
     """
     Returns a list of paths to all cropped images for an item defined by stac item id.
     """
+    base_dir = os.path.join(TIF_IMAGES_DIR, stac_item_id)
+
+    if not os.path.exists(base_dir):
+        tile_splitter_stat.fetch_image(stac_item_id)
+    
     base_dir = os.path.join(TIF_IMAGES_DIR, stac_item_id, "tiles")
 
     if not os.path.exists(base_dir):
