@@ -1,0 +1,51 @@
+<div class="top-section">
+  <!-- Left: File upload form -->
+  <div class="form-wrapper">
+    <div class="file-upload">
+      <h4>Upload skraafoto image</h4>
+      <input type="file" (change)="onFileSelected($event)" />
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="onDetect()"
+        [disabled]="!selectedFile"
+      >
+        Locate cars
+      </button>
+      <div class="status-message" *ngIf="statusMessage" [ngClass]="statusClass">
+        {{ statusMessage }}
+      </div>      
+    </div>
+  </div>
+
+  <!-- Right: Thumbnails -->
+  <div class="thumbnails-wrapper">
+    <div class="thumbnail-item">
+      <h4>Selected Image</h4>
+      <ng-container *ngIf="previewUrl; else selectedImagePreviewPlaceholder">
+        <img [src]="previewUrl"  alt="Selected Image Preview" (click)="openImageModal()"
+        style="cursor: pointer;"/>
+      </ng-container>
+      <ng-template #selectedImagePreviewPlaceholder>
+        <div class="thumbnail-placeholder">
+          <div class="preview-text">Selected image will be displayed here</div>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="thumbnail-item">
+      <h4>Original Skraafoto Image</h4>
+      <ng-container *ngIf="thumbnailUrl; else thumbnailPlaceholder">
+        <img [src]="thumbnailUrl" alt="Thumbnail of selected area"(click)="openThumbnailModal()"
+        style="cursor: pointer;" />
+      </ng-container>
+      <ng-template #thumbnailPlaceholder>
+        <div class="thumbnail-placeholder">
+          <div class="preview-text">
+            Preview of the original Skraafoto image will be displayed here.
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

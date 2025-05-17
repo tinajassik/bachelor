@@ -1,0 +1,20 @@
+<div class="content-container">
+    <div *ngIf="error" class="status-message error">{{ error }}</div>
+    <div class="media-wrapper">
+      <div #imageRef class="media-item">
+        <ng-container *ngIf="labeledImageSrc; else imagePlaceholder">
+        <img [src]="labeledImageSrc" alt="Labeled Image" />
+        </ng-container>
+        <ng-template #imagePlaceholder>
+          <div class="placeholder">
+            Image with detected cars will be displayed here.
+          </div>
+        </ng-template>
+      </div>
+      <div class="media-item">
+        <app-map [geoCoords] = 'geoCoords'></app-map>
+      </div>
+    </div>
+    <app-detections-list></app-detections-list>
+  </div>
+  
