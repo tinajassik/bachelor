@@ -2,19 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api_routes import geo
 import os
-from src.data import data_access # Import the data_access module
+from data import data_access 
 
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-# Ensure the HDF5 data file is created at startup if it doesn't exist
 @app.on_event("startup")
 async def startup_event():
     print("main.py: FastAPI application starting up (startup_event)...")
-    # Explicitly ensure the base data directory exists first.
-    # data_access.DIR_PATH should resolve to /app/data in the container.
-    app_data_dir = data_access.DIR_PATH
+    app_data_dir = 'app/data'
     print(f"main.py: Startup event: Ensuring directory '{app_data_dir}' exists.")
     if not os.path.exists(app_data_dir):
         try:

@@ -23,6 +23,9 @@ COPY src/ ./src/
 RUN mkdir -p /app/car_detection_model
 COPY car_detection_model/best.pt /app/car_detection_model/best.pt
 
+RUN mkdir -p /app/data
+COPY data/ /app/data
+
 RUN mkdir -p /app/static
 
 ENV PYTHONPATH "${PYTHONPATH}:/app:/app/src"
