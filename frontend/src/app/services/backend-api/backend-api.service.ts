@@ -6,11 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BackendApiService {
-
-  // Now that Nginx is proxying, the frontend calls its own origin
-  // and Nginx forwards requests starting with /api/
-  // The actual backend URL (http://127.0.0.1:8000/) is now effectively hidden from the browser.
-  private API_BASE_URL = '/api/'; // This assumes your backend routes (like /item) don't already start with /api
+  private API_BASE_URL = 'http://127.0.0.1:8000/';
 
   constructor(private http: HttpClient) {}
 
