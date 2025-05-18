@@ -6,14 +6,13 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DIR_PATH = os.path.join(BASE_DIR, "data")
 
 def create_hdf5_file(save_dir=DIR_PATH, filename="tile_data"):
-    # Ensure the save directory exists
     if not os.path.exists(save_dir):
         try:
-            os.makedirs(save_dir, exist_ok=True) # exist_ok=True is good practice
+            os.makedirs(save_dir, exist_ok=True)
             print(f"data_access.py: Directory '{save_dir}' ensured/created.")
         except Exception as e:
             print(f"data_access.py: Error creating directory '{save_dir}': {e}")
-            return # Cannot proceed if directory creation fails
+            return 
     else:
         print(f"data_access.py: Directory '{save_dir}' already exists.")
 
@@ -23,28 +22,11 @@ def create_hdf5_file(save_dir=DIR_PATH, filename="tile_data"):
     if not os.path.exists(file_path):
         print(f"data_access.py: File '{file_path}' does not exist. Attempting to create.")
         try:
-            with h5py.File(file_path, 'w') as hf: # 'w' creates or truncates
-                # Create an empty group or dataset if needed, or just leave it empty
-                hf.create_group("stac_ids") # Example: create a root group
-            print(f"data_access.py: HDF5 file '{file_path}' created successfully with a 'stac_ids' group.")
+            with h5py.File(file_path, 'w') as hf:
+                pass
+            print(f"data_access.py: HDF5 file '{file_path}' created successfully.")
         except Exception as e:
             print(f"data_access.py: Error creating HDF5 file '{file_path}': {e}")
-    else:
-        print(f"data_access.py: File '{file_path}' reported as existing by os.path.exists().")
-        print(f"data_access.py: Is it a file? {os.path.isfile(file_path)}")
-        print(f"data_access.py: Is it a directory? {os.path.isdir(file_path)}")
-        try:
-            # Try to open in append mode to see if it's a valid HDF5 file we can access
-            with h5py.File(file_path, 'a') as hf:
-                if "stac_ids" not in hf:
-                    hf.create_group("stac_ids")
-                    print(f"data_access.py: Opened existing file '{file_path}' and ensured 'stac_ids' group exists.")
-                else:
-                    print(f"data_access.py: Successfully opened existing file '{file_path}' in append mode. 'stac_ids' group found.")
-        except Exception as e:
-            print(f"data_access.py: Error opening/validating existing HDF5 file '{file_path}' in append mode: {e}")
-            print(f"data_access.py: This could mean it's not a valid HDF5 file, a directory, or a permissions issue despite os.path.exists() being true.")
-
 
 def save_to_file(new_tiles, save_dir=DIR_PATH,filename="tile_data"):
     file_path = os.path.join(save_dir, filename + ".h5")
