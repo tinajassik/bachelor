@@ -11,17 +11,6 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event():
     print("main.py: FastAPI application starting up (startup_event)...")
-    app_data_dir = 'app/data'
-    print(f"main.py: Startup event: Ensuring directory '{app_data_dir}' exists.")
-    if not os.path.exists(app_data_dir):
-        try:
-            os.makedirs(app_data_dir, exist_ok=True)
-            print(f"main.py: Startup event: Directory '{app_data_dir}' created/ensured.")
-        except Exception as e:
-            print(f"main.py: Startup event: Error creating directory '{app_data_dir}': {e}")
-    else:
-        print(f"main.py: Startup event: Directory '{app_data_dir}' already exists.")
-
     print("main.py: Startup event: Calling data_access.create_hdf5_file().")
     data_access.create_hdf5_file()
     print("main.py: Startup event: Call to data_access.create_hdf5_file() completed.")
