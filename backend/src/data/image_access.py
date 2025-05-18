@@ -12,7 +12,7 @@ def get_or_fetch_image_by_id(stac_item_id) -> str:
     Returns the path to the image file.
     """
     base_dir = os.path.join(TIF_IMAGES_DIR, stac_item_id)
-    os.makedirs(TIF_IMAGES_DIR, exist_ok=True)
+    os.makedirs(base_dir, exist_ok=True)
 
     file_name = f"{stac_item_id}.tif"
     file_path = os.path.join(TIF_IMAGES_DIR, stac_item_id, file_name)
