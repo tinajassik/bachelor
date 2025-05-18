@@ -39,7 +39,7 @@ export class SkraafotoComponent {
       error: err => this.error = err.error.detail
     } );
   }
- 
+
   onFetch() {
     this.loading = true;
     this.error = undefined;
@@ -47,6 +47,7 @@ export class SkraafotoComponent {
 
     this.backendService.getStacItemById(this.stacItemId!).subscribe({
       next: (result) => {
+        console.log('Data received from getStacItemById:', result); // <-- Added this log
         const tifUrl = result.assets?.data?.href || null;
         this.imgOriginalHeight = result.properties['proj:shape'][0];
         this.imgOriginalWidth = result.properties['proj:shape'][1];
@@ -79,6 +80,7 @@ export class SkraafotoComponent {
         });
       },
       error: (err) => {
+        console.error('Error from getStacItemById subscription:', err); // <-- Added this log
         this.error = 'Failed to fetch item. Please check the ID.' + err.error.detail;
         this.loading = false;
       }
