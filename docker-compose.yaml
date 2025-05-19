@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/src:/app/src
+    environment:
+      - SKRAAFOTO_TOKEN=${SKRAAFOTO_TOKEN}
+      - HEIGHT_MODEL_USERNAME=${HEIGHT_MODEL_USERNAME}
+      - HEIGHT_MODEL_PASSWORD=${HEIGHT_MODEL_PASSWORD}
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
