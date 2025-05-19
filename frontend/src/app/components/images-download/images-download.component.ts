@@ -5,7 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { SafeUrl } from '@angular/platform-browser';
-import { BackendApiService } from '../services/backend-api/backend-api.service';
+import { BackendApiService } from '../../services/backend-api/backend-api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
@@ -49,7 +49,6 @@ stacItemId: string | null = null;
         this.loading = false;
         if (!tifUrl) {
           this.error = 'No image found for this STAC item.';
-          this.loading = false;
           return;
         }
 
@@ -57,6 +56,7 @@ stacItemId: string | null = null;
           next: (blob) => {
             const objectURL = URL.createObjectURL(blob);
             this.thumbnailUrl = objectURL;
+            this.loading = false;
           },
           error: (err) => {
             console.log("Failed to display image thumbnail: ", err.message)

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ImagesDownloadComponent } from './images-download.component';
 import { provideHttpClient } from '@angular/common/http';
-import { BackendApiService } from '../services/backend-api/backend-api.service';
+import { BackendApiService } from '../../services/backend-api/backend-api.service';
 
 describe('ImagesDownloadComponent', () => {
   let component: ImagesDownloadComponent;

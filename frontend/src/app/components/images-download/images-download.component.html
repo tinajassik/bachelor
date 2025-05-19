@@ -28,10 +28,19 @@
   </div>
 
   <div class="download-group">
-  <div class="thumbnail-preview" *ngIf="thumbnailUrl">
-    <img [src]="thumbnailUrl" alt="Thumbnail" />
-  </div>
+    <div class="thumbnail-preview" *ngIf="thumbnailUrl">
 
+      <mat-spinner *ngIf="loading" diameter="90" class="thumbnail-spinner"></mat-spinner>
+
+      <img
+        *ngIf="!loading"
+        [src]="thumbnailUrl"
+        alt="Thumbnail"
+        (load)="loading = false"
+        (error)="loading = false"
+      />
+
+    </div>
     <button
       mat-flat-button
       color="accent"
@@ -47,8 +56,8 @@
       <span>Preparing your ZIP...</span>
     </div>
 
-  <div class="error-message" *ngIf="error">
-    {{ error }}
-  </div>
+    <div class="error-message" *ngIf="error">
+      {{ error }}
+    </div>
   </div>
 </form>
