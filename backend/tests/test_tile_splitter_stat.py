@@ -19,7 +19,7 @@ def test_extract_tiles_num(tmp_path):
     image = Image.new("RGB", (10750, 8700))
     image.save(image_path)
 
-    with patch("utils.tile_splitter_stat.images_to_split_path", tmp_path):
+    with patch("utils.tile_splitter_stat.IMAGES_TO_SPLIT_PATH", tmp_path):
         extract_tiles(item_id, grid_scale=0.04)
 
         tiles_dir = image_dir / "tiles"
@@ -39,7 +39,7 @@ def test_extract_tiles_names(tmp_path):
     image = Image.new("RGB", (image_width, image_height))
     image.save(image_path)
 
-    with patch("utils.tile_splitter_stat.images_to_split_path", tmp_path):
+    with patch("utils.tile_splitter_stat.IMAGES_TO_SPLIT_PATH", tmp_path):
         extract_tiles(item_id, grid_scale=0.04)
 
         tiles_dir = image_dir / "tiles"
