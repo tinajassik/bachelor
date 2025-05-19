@@ -6,7 +6,7 @@ import re
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
 
-images_to_split_path = os.path.join("..", "data", "skraafoto_images")
+IMAGES_TO_SPLIT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "skraafoto_images"))
 
 def fetch_image(item_id):
     data = skraafoto.fetch_skraafoto_item(item_id)
@@ -14,7 +14,7 @@ def fetch_image(item_id):
     img_url = data["assets"]["data"]["href"]
     img_data = skraafoto.get_image_from_url(img_url).content
 
-    save_dir = os.path.join(images_to_split_path, item_id)
+    save_dir = os.path.join(IMAGES_TO_SPLIT_PATH, item_id)
     os.makedirs(save_dir, exist_ok=True)
 
     img_path = os.path.join(save_dir, f"{item_id}.tif")
@@ -45,7 +45,7 @@ def fetch_images_by_bbox(lat1=55.61372384290898, lon1=12.374812877864615, lat2=5
 
         img_data = skraafoto.get_image_from_url(img_url).content
 
-        save_dir = os.path.join(images_to_split_path, item_id)
+        save_dir = os.path.join(IMAGES_TO_SPLIT_PATH, item_id)
         os.makedirs(save_dir, exist_ok=True)
 
         img_path = os.path.join(save_dir, f"{item_id}.tif")
@@ -57,7 +57,7 @@ def fetch_images_by_bbox(lat1=55.61372384290898, lon1=12.374812877864615, lat2=5
     
 
 def extract_tiles(item_id, grid_scale=0.04):
-    image_path = os.path.join(images_to_split_path, item_id, item_id + ".tif")
+    image_path = os.path.join(IMAGES_TO_SPLIT_PATH, item_id, item_id + ".tif")
     image = Image.open(image_path)
     img_width, img_height = image.size
     tile_width = math.ceil(img_width * grid_scale)

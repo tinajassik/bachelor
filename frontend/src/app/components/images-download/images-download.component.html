@@ -1,0 +1,63 @@
+<form class="download-container">
+
+  <div class="instructions">
+    Download images in a format suitable for object detection
+  </div>
+
+  <div class="input-group">
+    <mat-form-field class="stac-field" appearance="fill">
+      <mat-label>STAC Item ID</mat-label>
+      <input
+        matInput
+        [matAutocomplete]="auto"
+        [(ngModel)]="stacItemId"
+        name="stacItemId"
+      />
+      <mat-autocomplete #auto="matAutocomplete">
+        @for (option of availableStacItems; track option) {
+          <mat-option [value]="option">
+            {{ option }}
+          </mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+    <button
+      mat-flat-button color="primary" class="fetch-button" [disabled]="!stacItemId || loading" (click)="onFetch()">
+      Fetch Item
+    </button>
+  </div>
+
+  <div class="download-group">
+    <div class="thumbnail-preview" *ngIf="thumbnailUrl">
+
+      <mat-spinner *ngIf="loading" diameter="90" class="thumbnail-spinner"></mat-spinner>
+
+      <img
+        *ngIf="!loading"
+        [src]="thumbnailUrl"
+        alt="Thumbnail"
+        (load)="loading = false"
+        (error)="loading = false"
+      />
+
+    </div>
+    <button
+      mat-flat-button
+      color="accent"
+      class="download-button"
+      [disabled]="!stacItemId || downloading"
+      (click)="onDownload()"
+    >
+      Download Images
+    </button>
+
+    <div *ngIf="downloading" class="download-spinner">
+      <mat-spinner diameter="30"></mat-spinner>
+      <span>Preparing your ZIP...</span>
+    </div>
+
+    <div class="error-message" *ngIf="error">
+      {{ error }}
+    </div>
+  </div>
+</form>

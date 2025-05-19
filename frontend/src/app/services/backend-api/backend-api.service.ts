@@ -38,4 +38,8 @@ export class BackendApiService {
     return this.http.post<any>(this.API_BASE_URL +"detect", file);
   }
 
+  getCroppedImages(stacItemId: string): Observable<Blob> {
+    return this.http.get(this.API_BASE_URL+"images", { params: { item_id: stacItemId }, responseType: 'blob' });
+  }
+
 }

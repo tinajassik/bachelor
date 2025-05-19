@@ -53,3 +53,10 @@ async def detect_cars(file: UploadFile = File(...)):
     Runs a prediction on the car detection model. Returns detection predictions and projected geographic locations.
     """
     return await car_detection_logic.detect_cars(file)
+
+@router.get("/images")
+def get_cropped_images(item_id):
+    """
+    Crops an already fetched Skraafoto into smaller images and return them in a .ZIP folder.
+    """
+    return data_access_logic.get_cropped_images(item_id)
