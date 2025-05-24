@@ -1,5 +1,4 @@
 from fastapi import APIRouter, File, UploadFile
-from services import skraafoto
 from logic import skraafoto_logic, georeferencing_logic, data_access_logic, car_detection_logic
 
 router = APIRouter()
@@ -21,7 +20,7 @@ def fetch_skraafoto_image_thumbnail(tif_url: str):
     """
     Fetches a a thumbnail jpg image from the Skraafoto API based on the given tif URL.
     """
-    return skraafoto.fetch_skraafoto_image_thumbnail(tif_url)
+    return skraafoto_logic.fetch_skraafoto_thumbnail(tif_url)
     
     
 @router.get("/location")
